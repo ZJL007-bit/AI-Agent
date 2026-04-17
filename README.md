@@ -1,11 +1,10 @@
-<<<<<<< HEAD
-# Len AI Agent - AI超级智能体
+# AI Agent - AI超级智能体矩阵
 
 基于Spring AI和LangChain4j构建的智能AI交互系统，支持多种大模型接入、知识库问答和工具调用能力。
 
 ## 项目简介
 
-Len AI Agent是一个以AI开发为核心的智能体项目，旨在提供强大的AI交互能力，包括：
+AI Agent智能体矩阵应用是一个以AI开发为核心的智能体项目，旨在提供强大的AI交互能力，包括：
 
 - 多轮对话与上下文记忆
 - 知识库问答 (RAG)
@@ -186,10 +185,4 @@ String answer = model.chat("你好，我想了解一下AI Agent");
 5. 创建Pull Request
 
 ## 联系方式
-
-- 项目维护者: [lenyan](https://blog.csdn.net/jgk666666)
-- 项目讨论群: [xxx xxx]
-
----
-
-*本项目是"lenAI超级智能体"系列的实现，旨在帮助开发者快速掌握AI开发技术，构建智能应用。*
+- 项目维护者: [曾家乐](QQ邮箱:2558933803@qq.com)
