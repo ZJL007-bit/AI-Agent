@@ -1,0 +1,555 @@
+<template>
+  <div class="app-page manus-app">
+    <div class="page-header">
+      <div class="page-title-group">
+        <div class="title-icon manus-icon">
+          <icon-bulb />
+        </div>
+        <div class="title-text">
+          <h1>AI 超级智能体</h1>
+          <span class="title-badge">AI</span>
+        </div>
+      </div>
+      <div class="page-actions">
+        <a-button type="outline" class="clear-btn" @click="clearMessages">
+          <template #icon>
+            <icon-delete />
+          </template>
+          清除记录
+        </a-button>
+      </div>
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-content">
+        <div class="welcome-card">
+          <div class="welcome-glow"></div>
+          <div class="welcome-content">
+            <div class="welcome-icon">
+              <icon-bulb />
+            </div>
+            <h2>你好，我是AI超级智能体！</h2>
+            <p>我可以帮助你:</p>
+            <ul class="feature-list">
+              <li>
+                <span class="feature-icon">🧠</span>
+                回答各类知识问题，从科学技术到文学艺术
+              </li>
+              <li>
+                <span class="feature-icon">✍️</span>
+                协助完成写作任务，生成创意内容
+              </li>
+              <li>
+                <span class="feature-icon">📊</span>
+                分析复杂数据，提供见解和总结
+              </li>
+              <li>
+                <span class="feature-icon">💡</span>
+                解决实际问题，提供解决方案和建议
+              </li>
+            </ul>
+            <p class="welcome-cta">请告诉我你需要什么帮助，或者直接提出你的问题！</p>
+          </div>
+        </div>
+        
+        <chat-message
+          v-for="(message, index) in messages"
+          :key="index"
+          :text="message.content"
+          :is-user="message.isUser"
+          :sender-name="message.isUser ? '我' : '超级智能体'"
+          :timestamp="message.timestamp"
+        />
+        
+        <div v-if="isLoading" class="typing-indicator">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span>超级智能体正在回复...</span>
+        </div>
+      </div>
+      
+      <div class="chat-input-area">
+        <a-input-search
+          placeholder="告诉我你需要什么帮助..."
+          button-text="发送"
+          search-button
+          @search="sendMessage"
+          v-model="inputValue"
+          :loading="isLoading"
+          :disabled="isLoading"
+          @keydown="handleKeydown"
+          class="input-search manus-input"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { onBeforeUnmount, ref, watch, nextTick } from 'vue';
+import ChatMessage from '@/components/ChatMessage.vue';
+import { connectToManusChat } from '@/services/api';
+import { getOrCreateChatId } from '@/utils/uuid';
+import { IconBulb, IconDelete } from '@arco-design/web-vue/es/icon';
+
+export default {
+  name: 'ManusAppView',
+  components: {
+    ChatMessage,
+    IconBulb,
+    IconDelete
+  },
+  setup() {
+    const chatId = ref('');
+    const currentEventSource = ref(null);
+    const inputValue = ref('');
+    const isLoading = ref(false);
+    const messages = ref([]);
+    const currentSteps = ref([]);
+    
+    chatId.value = getOrCreateChatId('manus_app_chat_id');
+    
+    const loadMessages = () => {
+      const savedMessages = localStorage.getItem(`chat_messages_${chatId.value}`);
+      if (savedMessages) {
+        messages.value = JSON.parse(savedMessages);
+      }
+    };
+    
+    const saveMessages = () => {
+      localStorage.setItem(`chat_messages_${chatId.value}`, JSON.stringify(messages.value));
+    };
+    
+    loadMessages();
+    
+    const clearMessages = () => {
+      if (window.confirm('你确定要清除所有聊天记录吗？此操作不可恢复。')) {
+        messages.value = [];
+        localStorage.removeItem(`chat_messages_${chatId.value}`);
+      }
+    };
+    
+    const scrollToBottom = () => {
+      nextTick(() => {
+        const chatContent = document.querySelector('.chat-content');
+        if (chatContent) {
+          chatContent.scrollTo({ top: chatContent.scrollHeight, behavior: 'smooth' });
+        }
+      });
+    };
+    
+    watch(() => messages.value.length, scrollToBottom);
+    
+    const parseSteps = (text) => {
+      const stepPattern = /Step \d+: 工具\[\w+\].*?(?=Step \d+:|$)/gs;
+      let matches;
+      try {
+        matches = Array.from(text.matchAll(stepPattern));
+      } catch (e) {
+        return [text];
+      }
+      if (matches.length === 0) {
+        if (text.includes('Step') && text.includes('工具[')) {
+          return [text];
+        }
+        if (text.trim()) {
+          return [text];
+        }
+        return [];
+      }
+      const steps = matches.map(match => match[0].trim());
+      return steps;
+    };
+    
+    const sendMessage = (message) => {
+      if (!message.trim() || isLoading.value) return;
+      
+      const userMessage = {
+        content: message,
+        isUser: true,
+        timestamp: Date.now()
+      };
+      messages.value.push(userMessage);
+      saveMessages();
+      
+      inputValue.value = '';
+      isLoading.value = true;
+      
+      if (currentEventSource.value) {
+        currentEventSource.value.close();
+      }
+      
+      currentSteps.value = [];
+      let accumulatedResponse = '';
+      
+      const eventSource = connectToManusChat(
+        message,
+        (data) => {
+          accumulatedResponse += data;
+          const steps = parseSteps(accumulatedResponse);
+          
+          if (steps.length > currentSteps.value.length) {
+            for (let i = currentSteps.value.length; i < steps.length; i++) {
+              const stepMessage = {
+                content: steps[i],
+                isUser: false,
+                timestamp: Date.now() + i
+              };
+              messages.value.push(stepMessage);
+            }
+            currentSteps.value = steps;
+          } else if (steps.length > 0) {
+            const lastStepIndex = messages.value.findIndex(
+              msg => !msg.isUser && msg.content.includes(currentSteps.value[currentSteps.value.length - 1].substring(0, 20))
+            );
+            if (lastStepIndex !== -1) {
+              messages.value[lastStepIndex].content = steps[steps.length - 1];
+            }
+            currentSteps.value = steps;
+          }
+          saveMessages();
+        },
+        (error) => {
+          console.error('SSE连接错误:', error);
+          isLoading.value = false;
+        }
+      );
+      
+      eventSource.addEventListener('done', () => {
+        isLoading.value = false;
+        eventSource.close();
+      });
+      
+      currentEventSource.value = eventSource;
+    };
+    
+    const handleKeydown = (e) => {
+      if (e.key === 'Enter') {
+        if (e.shiftKey) {
+          inputValue.value += '\n';
+          e.preventDefault();
+        } else if (!isLoading.value) {
+          sendMessage(inputValue.value);
+          e.preventDefault();
+        }
+      }
+    };
+    
+    onBeforeUnmount(() => {
+      if (currentEventSource.value) {
+        currentEventSource.value.close();
+        currentEventSource.value = null;
+      }
+    });
+    
+    return {
+      chatId,
+      inputValue,
+      isLoading,
+      messages,
+      sendMessage,
+      clearMessages,
+      handleKeydown
+    };
+  }
+};
+</script>
+
+<style scoped>
+.app-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xl);
+  background: var(--color-gray-50);
+  position: relative;
+}
+
+[data-theme="dark"] .app-page {
+  background: var(--bg-primary);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .page-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.page-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.title-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  font-size: 24px;
+}
+
+.manus-icon {
+  background: linear-gradient(135deg, var(--color-manus-light) 0%, rgba(6, 182, 212, 0.2) 100%);
+  color: var(--color-manus);
+}
+
+.title-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.title-text h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.title-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-manus-light) 0%, rgba(6, 182, 212, 0.15) 100%);
+  color: var(--color-manus);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.page-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.clear-btn {
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+.clear-btn:hover {
+  border-color: var(--color-manus) !important;
+  color: var(--color-manus) !important;
+}
+
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.chat-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xl);
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .welcome-card {
+  background: rgba(26, 26, 36, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.welcome-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 0% 0%, rgba(0, 212, 255, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.welcome-content {
+  position: relative;
+}
+
+.welcome-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-manus-light);
+  color: var(--color-manus);
+  border-radius: var(--radius-md);
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.welcome-content h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.welcome-content p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+[data-theme="dark"] .feature-list li {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.feature-list li:last-child {
+  border-bottom: none;
+}
+
+.feature-icon {
+  font-size: 18px;
+}
+
+.welcome-cta {
+  font-size: 14px;
+  color: var(--color-manus);
+  font-weight: 500;
+}
+
+.chat-input-area {
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--border-color);
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .chat-input-area {
+  background: var(--bg-primary);
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.input-search :deep(.arco-btn-primary) {
+  background: linear-gradient(135deg, var(--color-manus) 0%, #22D3EE 100%) !important;
+  border: none;
+}
+
+.input-search :deep(.arco-btn-primary):hover {
+  background: linear-gradient(135deg, #22D3EE 0%, var(--color-manus) 100%) !important;
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+}
+
+.input-search :deep(.arco-input-search) {
+  background: var(--color-bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .input-search :deep(.arco-input-search) {
+  background: var(--bg-primary) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.input-search :deep(.arco-input-search):focus-within {
+  border-color: var(--color-manus) !important;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-manus);
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 发送按钮动画 */
+.chat-input-area :deep(.arco-btn-primary) {
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-input-area :deep(.arco-btn-primary)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.chat-input-area :deep(.arco-btn-primary:hover)::before {
+  left: 100%;
+}
+
+.chat-input-area :deep(.arco-btn-primary:hover) {
+  box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
+  transform: translateY(-1px);
+}
+</style>
