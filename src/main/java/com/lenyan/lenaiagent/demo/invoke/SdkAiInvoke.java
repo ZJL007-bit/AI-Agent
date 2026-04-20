@@ -20,7 +20,7 @@ public class SdkAiInvoke {
                     .apiKey(apiKey)
                     .model("qwen-plus")
                     .messages(Arrays.asList(
-                            Message.builder().role(Role.SYSTEM.getValue()).content("You are a helpful assistant.")
+                            Message.builder().role(Role.SYSTEM.getValue()).content("您好，我是您的AI助手。")
                                     .build(),
                             Message.builder().role(Role.USER.getValue()).content("你是谁？").build()))
                     .resultFormat(GenerationParam.ResultFormat.MESSAGE)

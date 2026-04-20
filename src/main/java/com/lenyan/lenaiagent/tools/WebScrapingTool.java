@@ -13,8 +13,8 @@ public class WebScrapingTool {
     /**
      * 抓取指定URL的网页内容
      */
-    @Tool(description = "Scrape the content of a web page")
-    public String scrapeWebPage(@ToolParam(description = "URL of the web page to scrape") String url) {
+    @Tool(description = "抓取指定URL的网页内容")
+    public String scrapeWebPage(@ToolParam(description = "要抓取的网页URL") String url) {
         try {
             // 使用Jsoup获取页面内容
             Document document = Jsoup.connect(url).get();

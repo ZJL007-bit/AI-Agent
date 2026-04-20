@@ -15,8 +15,8 @@ public class TerminalOperationTool {
     /**
      * 执行终端命令并返回结果
      */
-    @Tool(description = "Execute a command in the terminal")
-    public String executeTerminalCommand(@ToolParam(description = "Command to execute in the terminal") String command) {
+    @Tool(description = "在终端中执行命令并返回结果")
+    public String executeTerminalCommand(@ToolParam(description = "要执行的终端命令") String command) {
         StringBuilder output = new StringBuilder();
         try {
             // 使用ProcessBuilder执行命令

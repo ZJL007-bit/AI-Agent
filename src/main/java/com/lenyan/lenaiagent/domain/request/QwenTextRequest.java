@@ -20,8 +20,8 @@ public class QwenTextRequest {
     @Schema(description = "用户消息内容", example = "你好，请介绍一下自己")
     private String content;
 
-    @Schema(description = "系统提示词", example = "You are a helpful assistant.")
-    private String systemPrompt = "You are a helpful assistant.";
+    @Schema(description = "系统提示词", example = "您好，我是您的AI助手。")
+    private String systemPrompt = "您好，我是您的AI助手。";
 
     @Schema(description = "是否使用流式输出", example = "false")
     private Boolean streamOutput;

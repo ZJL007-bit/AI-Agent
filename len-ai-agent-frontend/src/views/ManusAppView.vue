@@ -6,7 +6,7 @@
           <icon-bulb />
         </div>
         <div class="title-text">
-          <h1>AI 超级智能体</h1>
+          <h1>AI工具智能体</h1>
           <span class="title-badge">AI</span>
         </div>
       </div>
@@ -19,7 +19,7 @@
         </a-button>
       </div>
     </div>
-    
+
     <div class="chat-container">
       <div class="chat-content">
         <div class="welcome-card">
@@ -28,39 +28,53 @@
             <div class="welcome-icon">
               <icon-bulb />
             </div>
-            <h2>你好，我是AI超级智能体！</h2>
+            <h2>你好，我是AI工具智能体！</h2>
             <p>我可以帮助你:</p>
             <ul class="feature-list">
               <li>
-                <span class="feature-icon">🧠</span>
-                回答各类知识问题，从科学技术到文学艺术
+                <span class="feature-icon">💻</span>
+                邮件发送
               </li>
               <li>
-                <span class="feature-icon">✍️</span>
-                协助完成写作任务，生成创意内容
+                <span class="feature-icon">🔍 </span>
+                网络搜索与信息检索
+              </li>
+              <li>
+                <span class="feature-icon">⏰</span>
+                日期时间查询
               </li>
               <li>
                 <span class="feature-icon">📊</span>
-                分析复杂数据，提供见解和总结
+                PDF 文档生成
               </li>
               <li>
-                <span class="feature-icon">💡</span>
-                解决实际问题，提供解决方案和建议
+                <span class="feature-icon">🎨</span>
+                HTML 页面生成
+              </li>
+              <li>
+                <span class="feature-icon">✍️</span>
+                个性化分析报告生成
+              </li>
+              <li>
+                <span class="feature-icon">📥</span>
+                资源下载
+              </li>
+              <li>
+                <span class="feature-icon">📄 </span>
+                文件操作（创建、读取、写入）
+              </li>
+              <li>
+                <span class="feature-icon">🛑 </span>
+                智能终止交互
               </li>
             </ul>
             <p class="welcome-cta">请告诉我你需要什么帮助，或者直接提出你的问题！</p>
           </div>
         </div>
-        
-        <chat-message
-          v-for="(message, index) in messages"
-          :key="index"
-          :text="message.content"
-          :is-user="message.isUser"
-          :sender-name="message.isUser ? '我' : '超级智能体'"
-          :timestamp="message.timestamp"
-        />
-        
+
+        <chat-message v-for="(message, index) in messages" :key="index" :text="message.content"
+          :is-user="message.isUser" :sender-name="message.isUser ? '我' : '超级智能体'" :timestamp="message.timestamp" />
+
         <div v-if="isLoading" class="typing-indicator">
           <div class="typing-dots">
             <span></span>
@@ -70,19 +84,11 @@
           <span>超级智能体正在回复...</span>
         </div>
       </div>
-      
+
       <div class="chat-input-area">
-        <a-input-search
-          placeholder="告诉我你需要什么帮助..."
-          button-text="发送"
-          search-button
-          @search="sendMessage"
-          v-model="inputValue"
-          :loading="isLoading"
-          :disabled="isLoading"
-          @keydown="handleKeydown"
-          class="input-search manus-input"
-        />
+        <a-input-search placeholder="告诉我你需要什么帮助..." button-text="发送" search-button @search="sendMessage"
+          v-model="inputValue" :loading="isLoading" :disabled="isLoading" @keydown="handleKeydown"
+          class="input-search manus-input" />
       </div>
     </div>
   </div>
@@ -103,35 +109,47 @@ export default {
     IconDelete
   },
   setup() {
+    const CHAT_ID_KEY = 'manus_app_chat_id';
     const chatId = ref('');
     const currentEventSource = ref(null);
     const inputValue = ref('');
     const isLoading = ref(false);
     const messages = ref([]);
-    const currentSteps = ref([]);
-    
-    chatId.value = getOrCreateChatId('manus_app_chat_id');
-    
+    const stepMessageIndexes = ref({});
+    const finalMessageIndex = ref(null);
+
+    chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+
     const loadMessages = () => {
       const savedMessages = localStorage.getItem(`chat_messages_${chatId.value}`);
       if (savedMessages) {
         messages.value = JSON.parse(savedMessages);
       }
     };
-    
+
     const saveMessages = () => {
       localStorage.setItem(`chat_messages_${chatId.value}`, JSON.stringify(messages.value));
     };
-    
+
     loadMessages();
-    
+
     const clearMessages = () => {
       if (window.confirm('你确定要清除所有聊天记录吗？此操作不可恢复。')) {
+        if (currentEventSource.value) {
+          currentEventSource.value.close();
+          currentEventSource.value = null;
+        }
+
         messages.value = [];
         localStorage.removeItem(`chat_messages_${chatId.value}`);
+        localStorage.removeItem(CHAT_ID_KEY);
+        chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+        stepMessageIndexes.value = {};
+        finalMessageIndex.value = null;
+        isLoading.value = false;
       }
     };
-    
+
     const scrollToBottom = () => {
       nextTick(() => {
         const chatContent = document.querySelector('.chat-content');
@@ -140,33 +158,12 @@ export default {
         }
       });
     };
-    
+
     watch(() => messages.value.length, scrollToBottom);
-    
-    const parseSteps = (text) => {
-      const stepPattern = /Step \d+: 工具\[\w+\].*?(?=Step \d+:|$)/gs;
-      let matches;
-      try {
-        matches = Array.from(text.matchAll(stepPattern));
-      } catch (e) {
-        return [text];
-      }
-      if (matches.length === 0) {
-        if (text.includes('Step') && text.includes('工具[')) {
-          return [text];
-        }
-        if (text.trim()) {
-          return [text];
-        }
-        return [];
-      }
-      const steps = matches.map(match => match[0].trim());
-      return steps;
-    };
-    
+
     const sendMessage = (message) => {
       if (!message.trim() || isLoading.value) return;
-      
+
       const userMessage = {
         content: message,
         isUser: true,
@@ -174,58 +171,74 @@ export default {
       };
       messages.value.push(userMessage);
       saveMessages();
-      
+
       inputValue.value = '';
       isLoading.value = true;
-      
+
       if (currentEventSource.value) {
         currentEventSource.value.close();
       }
-      
-      currentSteps.value = [];
-      let accumulatedResponse = '';
-      
+
+      stepMessageIndexes.value = {};
+      finalMessageIndex.value = null;
+
       const eventSource = connectToManusChat(
         message,
         (data) => {
-          accumulatedResponse += data;
-          const steps = parseSteps(accumulatedResponse);
-          
-          if (steps.length > currentSteps.value.length) {
-            for (let i = currentSteps.value.length; i < steps.length; i++) {
+          const text = typeof data === 'string' ? data : String(data || '');
+          if (!text.trim()) {
+            return;
+          }
+
+          const trimmedText = text.trim();
+          const stepMatch = trimmedText.match(/^Step\s+(\d+):/);
+
+          if (stepMatch) {
+            const stepNumber = Number(stepMatch[1]);
+            const existingIndex = stepMessageIndexes.value[stepNumber];
+
+            if (typeof existingIndex === 'number' && messages.value[existingIndex]) {
+              messages.value[existingIndex].content = trimmedText;
+            } else {
               const stepMessage = {
-                content: steps[i],
+                content: trimmedText,
                 isUser: false,
-                timestamp: Date.now() + i
+                timestamp: Date.now() + stepNumber
               };
               messages.value.push(stepMessage);
+              stepMessageIndexes.value[stepNumber] = messages.value.length - 1;
             }
-            currentSteps.value = steps;
-          } else if (steps.length > 0) {
-            const lastStepIndex = messages.value.findIndex(
-              msg => !msg.isUser && msg.content.includes(currentSteps.value[currentSteps.value.length - 1].substring(0, 20))
-            );
-            if (lastStepIndex !== -1) {
-              messages.value[lastStepIndex].content = steps[steps.length - 1];
-            }
-            currentSteps.value = steps;
+          } else if (typeof finalMessageIndex.value === 'number' && messages.value[finalMessageIndex.value]) {
+            messages.value[finalMessageIndex.value].content += text;
+          } else {
+            const finalMessage = {
+              content: text,
+              isUser: false,
+              timestamp: Date.now() + 999
+            };
+            messages.value.push(finalMessage);
+            finalMessageIndex.value = messages.value.length - 1;
           }
+
           saveMessages();
         },
         (error) => {
-          console.error('SSE连接错误:', error);
+          console.error('SSE 连接错误:', error);
           isLoading.value = false;
+          currentEventSource.value = null;
         }
       );
-      
+
       eventSource.addEventListener('done', () => {
         isLoading.value = false;
+        saveMessages();
         eventSource.close();
+        currentEventSource.value = null;
       });
-      
+
       currentEventSource.value = eventSource;
     };
-    
+
     const handleKeydown = (e) => {
       if (e.key === 'Enter') {
         if (e.shiftKey) {
@@ -237,14 +250,14 @@ export default {
         }
       }
     };
-    
+
     onBeforeUnmount(() => {
       if (currentEventSource.value) {
         currentEventSource.value.close();
         currentEventSource.value = null;
       }
     });
-    
+
     return {
       chatId,
       inputValue,
@@ -264,12 +277,52 @@ export default {
   display: flex;
   flex-direction: column;
   padding: var(--space-xl);
-  background: var(--color-gray-50);
+  background:
+    radial-gradient(circle at 8% 10%, rgba(34, 211, 238, 0.16) 0%, rgba(34, 211, 238, 0) 42%),
+    radial-gradient(circle at 88% 84%, rgba(14, 165, 233, 0.16) 0%, rgba(14, 165, 233, 0) 46%),
+    linear-gradient(150deg, #f3fbff 0%, #edf8ff 46%, #f7fcff 100%);
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 [data-theme="dark"] .app-page {
-  background: var(--bg-primary);
+  background:
+    radial-gradient(circle at 14% 8%, rgba(8, 145, 178, 0.26) 0%, rgba(8, 145, 178, 0) 44%),
+    radial-gradient(circle at 88% 90%, rgba(6, 182, 212, 0.2) 0%, rgba(6, 182, 212, 0) 50%),
+    linear-gradient(150deg, #0c1419 0%, #0e1b22 52%, #10181f 100%);
+}
+
+.app-page::before,
+.app-page::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-page::before {
+  width: 380px;
+  height: 380px;
+  right: -120px;
+  top: -140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0) 68%);
+}
+
+.app-page::after {
+  width: 420px;
+  height: 420px;
+  left: -160px;
+  bottom: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.16) 0%, rgba(14, 165, 233, 0) 72%);
+}
+
+.page-header,
+.chat-container {
+  position: relative;
+  z-index: 1;
 }
 
 .page-header {
@@ -349,16 +402,29 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(250, 254, 255, 0.8) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(8, 145, 178, 0.14);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 24px 48px rgba(8, 145, 178, 0.12);
   overflow: hidden;
+}
+
+[data-theme="dark"] .chat-container {
+  background: linear-gradient(180deg, rgba(18, 29, 36, 0.84) 0%, rgba(16, 25, 31, 0.9) 100%);
+  border-color: rgba(34, 211, 238, 0.14);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
 }
 
 .chat-content {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-xl);
+  background: linear-gradient(180deg, rgba(239, 251, 255, 0.45) 0%, rgba(255, 255, 255, 0) 52%);
+}
+
+[data-theme="dark"] .chat-content {
+  background: linear-gradient(180deg, rgba(9, 24, 31, 0.4) 0%, rgba(9, 24, 31, 0) 52%);
 }
 
 .welcome-card {
@@ -518,13 +584,28 @@ export default {
 }
 
 @keyframes typingBounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-8px); }
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 发送按钮动画 */
@@ -540,7 +621,7 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
 

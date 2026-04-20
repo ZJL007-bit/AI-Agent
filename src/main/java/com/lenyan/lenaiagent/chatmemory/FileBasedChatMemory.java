@@ -18,6 +18,7 @@ import java.util.List;
  * 基于文件持久化的对话记忆
  */
 @Slf4j
+//@Component
 public class FileBasedChatMemory implements ChatMemory {
 
     private final String baseDir;

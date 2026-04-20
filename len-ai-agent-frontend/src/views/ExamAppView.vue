@@ -98,14 +98,16 @@ export default {
     IconDelete
   },
   setup() {
+    const CHAT_ID_KEY = 'exam_app_chat_id';
     const chatId = ref('');
     const currentEventSource = ref(null);
     const inputValue = ref('');
     const isLoading = ref(false);
     const messages = ref([]);
-    const currentSteps = ref([]);
+    const stepMessageIndexes = ref({});
+    const finalMessageIndex = ref(null);
 
-    chatId.value = getOrCreateChatId('exam_app_chat_id');
+    chatId.value = getOrCreateChatId(CHAT_ID_KEY);
 
     const loadMessages = () => {
       const savedMessages = localStorage.getItem(`chat_messages_${chatId.value}`);
@@ -119,33 +121,6 @@ export default {
     };
 
     loadMessages();
-    
-    const parseSteps = (text) => {
-      const stepPattern = /Step \d+: 工具\[\w+\].*?(?=Step \d+:|$)/gs;
-      
-      let matches;
-      try {
-        matches = Array.from(text.matchAll(stepPattern));
-      } catch (e) {
-        console.error('正则匹配错误:', e);
-        return [text];
-      }
-      
-      if (matches.length === 0) {
-        if (text.includes('Step') && text.includes('工具[')) {
-          return [text];
-        }
-        
-        if (text.trim()) {
-          return [text];
-        }
-        
-        return [];
-      }
-      
-      const steps = matches.map(match => match[0].trim());
-      return steps;
-    };
     
     // 处理键盘事件
     const handleKeydown = (e) => {
@@ -180,49 +155,61 @@ export default {
         currentEventSource.value.close();
       }
       
-      currentSteps.value = [];
-      let accumulatedResponse = '';
+      stepMessageIndexes.value = {};
+      finalMessageIndex.value = null;
       
       const eventSource = connectToQuizChat(
         message,
         (data) => {
-          accumulatedResponse += data;
-          
-          const steps = parseSteps(accumulatedResponse);
-          
-          if (steps.length > currentSteps.value.length) {
-            for (let i = currentSteps.value.length; i < steps.length; i++) {
+          const text = typeof data === 'string' ? data : String(data || '');
+          if (!text.trim()) {
+            return;
+          }
+
+          const trimmedText = text.trim();
+          const stepMatch = trimmedText.match(/^Step\s+(\d+):/);
+
+          if (stepMatch) {
+            const stepNumber = Number(stepMatch[1]);
+            const existingIndex = stepMessageIndexes.value[stepNumber];
+
+            if (typeof existingIndex === 'number' && messages.value[existingIndex]) {
+              messages.value[existingIndex].content = trimmedText;
+            } else {
               const stepMessage = {
-                content: steps[i],
-              isUser: false,
-                timestamp: Date.now() + i
-            };
+                content: trimmedText,
+                isUser: false,
+                timestamp: Date.now() + stepNumber
+              };
               messages.value.push(stepMessage);
+              stepMessageIndexes.value[stepNumber] = messages.value.length - 1;
             }
-            currentSteps.value = steps;
-          } else if (steps.length > 0) {
-            const lastStepIndex = messages.value.findIndex(
-              msg => !msg.isUser && msg.content.includes(currentSteps.value[currentSteps.value.length - 1].substring(0, 20))
-            );
-            
-            if (lastStepIndex !== -1) {
-              messages.value[lastStepIndex].content = steps[steps.length - 1];
-            }
-            
-            currentSteps.value = steps;
+          } else if (typeof finalMessageIndex.value === 'number' && messages.value[finalMessageIndex.value]) {
+            messages.value[finalMessageIndex.value].content += text;
+          } else {
+            const finalMessage = {
+              content: text,
+              isUser: false,
+              timestamp: Date.now() + 999
+            };
+            messages.value.push(finalMessage);
+            finalMessageIndex.value = messages.value.length - 1;
           }
           
           saveMessages();
         },
         (error) => {
-          console.error('SSE连接错误:', error);
+          console.error('SSE 连接错误:', error);
           isLoading.value = false;
+          currentEventSource.value = null;
         }
       );
       
       eventSource.addEventListener('done', () => {
         isLoading.value = false;
+        saveMessages();
         eventSource.close();
+        currentEventSource.value = null;
       });
       
       currentEventSource.value = eventSource;
@@ -230,8 +217,18 @@ export default {
 
     const clearMessages = () => {
       if (window.confirm('你确定要清除所有聊天记录吗？此操作不可恢复。')) {
+        if (currentEventSource.value) {
+          currentEventSource.value.close();
+          currentEventSource.value = null;
+        }
+
         messages.value = [];
         localStorage.removeItem(`chat_messages_${chatId.value}`);
+        localStorage.removeItem(CHAT_ID_KEY);
+        chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+        stepMessageIndexes.value = {};
+        finalMessageIndex.value = null;
+        isLoading.value = false;
       }
     };
     
@@ -283,12 +280,52 @@ export default {
   display: flex;
   flex-direction: column;
   padding: var(--space-xl);
-  background: var(--color-gray-50);
+  background:
+    radial-gradient(circle at 10% 8%, rgba(167, 139, 250, 0.18) 0%, rgba(167, 139, 250, 0) 42%),
+    radial-gradient(circle at 86% 86%, rgba(139, 92, 246, 0.16) 0%, rgba(139, 92, 246, 0) 46%),
+    linear-gradient(145deg, #fbf8ff 0%, #f5f1ff 45%, #fcfbff 100%);
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 [data-theme="dark"] .app-page {
-  background: var(--bg-primary);
+  background:
+    radial-gradient(circle at 12% 10%, rgba(124, 58, 237, 0.22) 0%, rgba(124, 58, 237, 0) 44%),
+    radial-gradient(circle at 88% 92%, rgba(147, 51, 234, 0.18) 0%, rgba(147, 51, 234, 0) 50%),
+    linear-gradient(145deg, #161222 0%, #1a1529 52%, #151221 100%);
+}
+
+.app-page::before,
+.app-page::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-page::before {
+  width: 360px;
+  height: 360px;
+  right: -120px;
+  top: -120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.22) 0%, rgba(167, 139, 250, 0) 70%);
+}
+
+.app-page::after {
+  width: 420px;
+  height: 420px;
+  left: -150px;
+  bottom: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.16) 0%, rgba(139, 92, 246, 0) 74%);
+}
+
+.page-header,
+.chat-container {
+  position: relative;
+  z-index: 1;
 }
 
 .page-header {
@@ -368,16 +405,32 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(251, 249, 255, 0.82) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(124, 58, 237, 0.14);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 24px 48px rgba(124, 58, 237, 0.14);
   overflow: hidden;
+}
+
+[data-theme="dark"] .chat-container {
+  background: linear-gradient(180deg, rgba(33, 26, 54, 0.86) 0%, rgba(28, 22, 46, 0.92) 100%);
+  border-color: rgba(167, 139, 250, 0.16);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.42);
 }
 
 .chat-content {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-xl);
+}
+
+.chat-content {
+  background: linear-gradient(180deg, rgba(247, 240, 255, 0.55) 0%, rgba(255, 255, 255, 0) 52%);
+}
+
+[data-theme="dark"] .chat-content {
+  background: linear-gradient(180deg, rgba(41, 31, 66, 0.38) 0%, rgba(41, 31, 66, 0) 52%);
 }
 
 .chat-icon::before {

@@ -268,7 +268,7 @@ export default {
         // 调用父组件提供的消息处理函数
         await props.onSendMessage(text, updateResponse);
       } catch (error) {
-        console.error('消息发送失败', error);
+        console.error('消息发送失败:', error);
         // 添加错误消息
         messages.value.push({
           content: '消息发送失败，请稍后重试。',

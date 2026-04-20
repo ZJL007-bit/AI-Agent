@@ -23,13 +23,13 @@ public class MyLoggerAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
 
     // 请求前打印用户输入
     private AdvisedRequest before(AdvisedRequest request) {
-        log.info("AI Request: {}", request.userText());
+        log.info("用户输入: {}", request.userText());
         return request;
     }
 
     // 响应后打印 AI 输出
     private void observeAfter(AdvisedResponse response) {
-        //log.info("AI Response: {}", response.response().getResult().getOutput().getText());
+        //log.info("AI 响应: {}", response.response().getResult().getOutput().getText());
     }
 
     // 同步调用处理

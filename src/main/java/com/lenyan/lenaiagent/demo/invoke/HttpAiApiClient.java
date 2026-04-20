@@ -15,7 +15,7 @@ public class HttpAiApiClient {
                 .set("input", JSONUtil.createObj()
                         .set("messages", JSONUtil.createArray()
                                 .put(JSONUtil.createObj().set("role", "system").set("content",
-                                        "You are a helpful assistant."))
+                                        "您好，我是您的AI助手。"))
                                 .put(JSONUtil.createObj().set("role", "user").set("content", userMessage))))
                 .set("parameters", JSONUtil.createObj().set("result_format", "message"));
 

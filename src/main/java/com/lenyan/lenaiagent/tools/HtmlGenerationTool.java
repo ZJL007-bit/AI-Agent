@@ -37,8 +37,8 @@ public class HtmlGenerationTool {
      * 生成美观的HTML文件，包含动效和响应式设计
      * 注意：正文内容不应包含标题(h1)，因为标题将根据title参数自动生成
      *
-     * @param title HTML文档标题，将显示在页面顶部
-     * @param content HTML正文内容(不应包含h1标题，因为标题会自动添加)
+     * @param title    HTML文档标题，将显示在页面顶部
+     * @param content  HTML正文内容(不应包含h1标题，因为标题会自动添加)
      * @param filename 可选的文件名(不含扩展名)，如果为空则自动生成
      * @return 结果信息，包含文件下载路径
      */
@@ -66,8 +66,8 @@ public class HtmlGenerationTool {
             String downloadLink = "/api/files/html/" + htmlFilename;
 
             return String.format(
-                "HTML生成成功！[点击查看HTML页面](%s)",
-                downloadLink
+                    "HTML生成成功！[点击查看HTML页面](%s)",
+                    downloadLink
             );
 
         } catch (Exception e) {
@@ -80,10 +80,10 @@ public class HtmlGenerationTool {
      * 生成带有内嵌页面的HTML文件，包含动效和响应式设计
      * 内容中可以使用{{embed:URL}}格式来指定内嵌页面的位置
      *
-     * @param title HTML文档标题，将显示在页面顶部
-     * @param content HTML正文内容，可以包含{{embed:URL}}格式的占位符
+     * @param title     HTML文档标题，将显示在页面顶部
+     * @param content   HTML正文内容，可以包含{{embed:URL}}格式的占位符
      * @param embedUrls 要嵌入的URL列表（用于向后兼容，如果content中包含embed标记，这个参数可以为空）
-     * @param filename 可选的文件名(不含扩展名)，如果为空则自动生成
+     * @param filename  可选的文件名(不含扩展名)，如果为空则自动生成
      * @return 结果信息，包含文件下载路径
      */
     @Tool(description = "Generate an HTML file with embedded pages using iframes")
@@ -114,8 +114,8 @@ public class HtmlGenerationTool {
             String downloadLink = "/api/files/html/" + htmlFilename;
 
             return String.format(
-                "HTML生成成功！[点击查看HTML页面](%s)",
-                downloadLink
+                    "HTML生成成功！[点击查看HTML页面](%s)",
+                    downloadLink
             );
 
         } catch (Exception e) {
@@ -202,93 +202,93 @@ public class HtmlGenerationTool {
 
         // 额外的CSS样式
         String extraStyles =
-            "        /* 内嵌页面样式 */\n" +
-            "        .embed-item {\n" +
-            "            margin: 2rem 0;\n" +
-            "            border: 1px solid var(--border-color);\n" +
-            "            border-radius: 8px;\n" +
-            "            overflow: hidden;\n" +
-            "            box-shadow: 0 4px 12px var(--shadow-color);\n" +
-            "            transition: transform 0.3s ease, box-shadow 0.3s ease;\n" +
-            "        }\n" +
-            "        .embed-item:hover {\n" +
-            "            transform: translateY(-5px);\n" +
-            "            box-shadow: 0 8px 15px var(--shadow-color);\n" +
-            "        }\n" +
-            "        .embed-container {\n" +
-            "            position: relative;\n" +
-            "            height: 600px;\n" +
-            "            width: 100%;\n" +
-            "            background-color: var(--bg-color);\n" +
-            "        }\n" +
-            "        .embedded-iframe {\n" +
-            "            width: 100%;\n" +
-            "            height: 100%;\n" +
-            "            border: none;\n" +
-            "        }\n" +
-            "        .iframe-loader {\n" +
-            "            position: absolute;\n" +
-            "            top: 0;\n" +
-            "            left: 0;\n" +
-            "            width: 100%;\n" +
-            "            height: 100%;\n" +
-            "            display: flex;\n" +
-            "            flex-direction: column;\n" +
-            "            justify-content: center;\n" +
-            "            align-items: center;\n" +
-            "            background-color: var(--bg-color);\n" +
-            "            z-index: 2;\n" +
-            "            transition: opacity 0.5s ease, visibility 0.5s ease;\n" +
-            "        }\n" +
-            "        .iframe-loader .loader-spinner {\n" +
-            "            margin-bottom: 10px;\n" +
-            "        }\n" +
-            "        .embed-source {\n" +
-            "            padding: 10px 15px;\n" +
-            "            font-size: 0.9rem;\n" +
-            "            border-top: 1px solid var(--border-color);\n" +
-            "            background-color: var(--card-bg);\n" +
-            "        }\n" +
-            "        .embed-source a {\n" +
-            "            color: var(--primary-color);\n" +
-            "            word-break: break-all;\n" +
-            "            text-decoration: none;\n" +
-            "        }\n" +
-            "        .embed-source a:hover {\n" +
-            "            text-decoration: underline;\n" +
-            "        }\n" +
-            "        .additional-embeds {\n" +
-            "            margin-top: 3rem;\n" +
-            "            padding-top: 2rem;\n" +
-            "            border-top: 1px solid var(--border-color);\n" +
-            "        }\n" +
-            "        @media (max-width: 768px) {\n" +
-            "            .embed-container {\n" +
-            "                height: 400px;\n" +
-            "            }\n" +
-            "        }\n";
+                "        /* 内嵌页面样式 */\n" +
+                        "        .embed-item {\n" +
+                        "            margin: 2rem 0;\n" +
+                        "            border: 1px solid var(--border-color);\n" +
+                        "            border-radius: 8px;\n" +
+                        "            overflow: hidden;\n" +
+                        "            box-shadow: 0 4px 12px var(--shadow-color);\n" +
+                        "            transition: transform 0.3s ease, box-shadow 0.3s ease;\n" +
+                        "        }\n" +
+                        "        .embed-item:hover {\n" +
+                        "            transform: translateY(-5px);\n" +
+                        "            box-shadow: 0 8px 15px var(--shadow-color);\n" +
+                        "        }\n" +
+                        "        .embed-container {\n" +
+                        "            position: relative;\n" +
+                        "            height: 600px;\n" +
+                        "            width: 100%;\n" +
+                        "            background-color: var(--bg-color);\n" +
+                        "        }\n" +
+                        "        .embedded-iframe {\n" +
+                        "            width: 100%;\n" +
+                        "            height: 100%;\n" +
+                        "            border: none;\n" +
+                        "        }\n" +
+                        "        .iframe-loader {\n" +
+                        "            position: absolute;\n" +
+                        "            top: 0;\n" +
+                        "            left: 0;\n" +
+                        "            width: 100%;\n" +
+                        "            height: 100%;\n" +
+                        "            display: flex;\n" +
+                        "            flex-direction: column;\n" +
+                        "            justify-content: center;\n" +
+                        "            align-items: center;\n" +
+                        "            background-color: var(--bg-color);\n" +
+                        "            z-index: 2;\n" +
+                        "            transition: opacity 0.5s ease, visibility 0.5s ease;\n" +
+                        "        }\n" +
+                        "        .iframe-loader .loader-spinner {\n" +
+                        "            margin-bottom: 10px;\n" +
+                        "        }\n" +
+                        "        .embed-source {\n" +
+                        "            padding: 10px 15px;\n" +
+                        "            font-size: 0.9rem;\n" +
+                        "            border-top: 1px solid var(--border-color);\n" +
+                        "            background-color: var(--card-bg);\n" +
+                        "        }\n" +
+                        "        .embed-source a {\n" +
+                        "            color: var(--primary-color);\n" +
+                        "            word-break: break-all;\n" +
+                        "            text-decoration: none;\n" +
+                        "        }\n" +
+                        "        .embed-source a:hover {\n" +
+                        "            text-decoration: underline;\n" +
+                        "        }\n" +
+                        "        .additional-embeds {\n" +
+                        "            margin-top: 3rem;\n" +
+                        "            padding-top: 2rem;\n" +
+                        "            border-top: 1px solid var(--border-color);\n" +
+                        "        }\n" +
+                        "        @media (max-width: 768px) {\n" +
+                        "            .embed-container {\n" +
+                        "                height: 400px;\n" +
+                        "            }\n" +
+                        "        }\n";
 
         // 额外的JavaScript
         String extraScripts =
-            "            // iframe加载处理\n" +
-            "            document.querySelectorAll('.embedded-iframe').forEach(function(iframe) {\n" +
-            "                const container = iframe.closest('.embed-container');\n" +
-            "                const loaderId = container.querySelector('.iframe-loader').id;\n" +
-            "                const loader = document.getElementById(loaderId);\n" +
-            "                \n" +
-            "                iframe.addEventListener('load', function() {\n" +
-            "                    setTimeout(function() {\n" +
-            "                        loader.style.opacity = '0';\n" +
-            "                        setTimeout(function() {\n" +
-            "                            loader.style.visibility = 'hidden';\n" +
-            "                        }, 500);\n" +
-            "                    }, 1000); // 给iframe一些额外时间来渲染\n" +
-            "                });\n" +
-            "                \n" +
-            "                iframe.addEventListener('error', function() {\n" +
-            "                    loader.innerHTML = '<div>加载页面失败</div>';\n" +
-            "                });\n" +
-            "            });\n";
+                "            // iframe加载处理\n" +
+                        "            document.querySelectorAll('.embedded-iframe').forEach(function(iframe) {\n" +
+                        "                const container = iframe.closest('.embed-container');\n" +
+                        "                const loaderId = container.querySelector('.iframe-loader').id;\n" +
+                        "                const loader = document.getElementById(loaderId);\n" +
+                        "                \n" +
+                        "                iframe.addEventListener('load', function() {\n" +
+                        "                    setTimeout(function() {\n" +
+                        "                        loader.style.opacity = '0';\n" +
+                        "                        setTimeout(function() {\n" +
+                        "                            loader.style.visibility = 'hidden';\n" +
+                        "                        }, 500);\n" +
+                        "                    }, 1000); // 给iframe一些额外时间来渲染\n" +
+                        "                });\n" +
+                        "                \n" +
+                        "                iframe.addEventListener('error', function() {\n" +
+                        "                    loader.innerHTML = '<div>加载页面失败</div>';\n" +
+                        "                });\n" +
+                        "            });\n";
 
         return buildFullHtmlDocument(title, processedContent, extraStyles, extraScripts);
     }
@@ -296,9 +296,9 @@ public class HtmlGenerationTool {
     /**
      * 构建完整的HTML文档
      *
-     * @param title 文档标题
-     * @param content 文档内容
-     * @param extraStyles 额外的CSS样式
+     * @param title        文档标题
+     * @param content      文档内容
+     * @param extraStyles  额外的CSS样式
      * @param extraScripts 额外的JavaScript脚本
      * @return 完整的HTML文档字符串
      */
@@ -311,122 +311,232 @@ public class HtmlGenerationTool {
                 .append("    <meta charset=\"UTF-8\">\n")
                 .append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
                 .append("    <title>").append(escapeHtml(title)).append("</title>\n")
-                .append("    <style>\n");
-
-        // 添加基础样式
-        htmlBuilder.append("        /* CSS变量定义（便于主题切换） */\n")
+                .append("    <style>\n")
+                .append("        /* CSS Variables for Themes */\n")
                 .append("        :root {\n")
-                .append("            --primary-color: #3498db;\n")
-                .append("            --secondary-color: #2c3e50;\n")
-                .append("            --accent-color: #e74c3c;\n")
-                .append("            --bg-color: #f8f9fa;\n")
-                .append("            --text-color: #333;\n")
-                .append("            --card-bg: #ffffff;\n")
+                .append("            --primary-color: #ff7eb3;\n")
+                .append("            --secondary-color: #ffe0f7;\n")
+                .append("            --bg-color: #fdfdfd;\n")
+                .append("            --card-bg: rgba(255, 255, 255, 0.8);\n")
                 .append("            --border-color: #ddd;\n")
-                .append("            --shadow-color: rgba(0,0,0,0.1);\n")
-                .append("            --animation-duration: 1.2s;\n")
-                .append("            --animation-delay: 0.1s;\n")
+                .append("            --shadow-color: rgba(0, 0, 0, 0.1);\n")
+                .append("            --glass-blur: 10px;\n")
                 .append("        }\n")
-                .append("        /* 暗色模式主题 */\n")
-                .append("        [data-theme=\"dark\"] {\n")
-                .append("            --primary-color: #61dafb;\n")
-                .append("            --secondary-color: #f1f1f1;\n")
-                .append("            --accent-color: #ff6b6b;\n")
-                .append("            --bg-color: #121212;\n")
-                .append("            --text-color: #e0e0e0;\n")
-                .append("            --card-bg: #1e1e1e;\n")
-                .append("            --border-color: #444;\n")
-                .append("            --shadow-color: rgba(255,255,255,0.05);\n")
-                .append("        }\n");
-
-        // 添加原有的CSS样式（省略以避免代码过长）
-        htmlBuilder.append("        /* 基础样式 */\n")
-                .append("        body { \n")
-                .append("            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n")
+                .append("        body {\n")
+                .append("            font-family: 'Poppins', sans-serif;\n")
+                .append("            background: linear-gradient(135deg, #ff7eb3, #ffe0f7);\n")
+                .append("            color: var(--text-color);\n")
+                .append("            margin: 0;\n")
+                .append("            padding: 0;\n")
+                .append("            display: flex;\n")
+                .append("            flex-direction: column;\n")
+                .append("            align-items: center;\n")
+                .append("            justify-content: center;\n")
+                .append("            min-height: 100vh;\n")
+                .append("            overflow-x: hidden;\n")
+                .append("        }\n")
+                .append("        .container {\n")
+                .append("            background: var(--card-bg);\n")
+                .append("            backdrop-filter: blur(var(--glass-blur));\n")
+                .append("            box-shadow: 0 8px 15px var(--shadow-color);\n")
+                .append("            border-radius: 15px;\n")
+                .append("            padding: 20px;\n")
+                .append("            max-width: 800px;\n")
+                .append("            width: 90%;\n")
+                .append("            animation: fadeIn 1.5s ease;\n")
+                .append("        }\n")
+                .append("        h1 {\n")
+                .append("            font-size: 2.5rem;\n")
+                .append("            color: var(--primary-color);\n")
+                .append("            text-align: center;\n")
+                .append("            margin-bottom: 20px;\n")
+                .append("            animation: slideDown 1s ease;\n")
+                .append("        }\n")
+                .append("        .content {\n")
+                .append("            font-size: 1.1rem;\n")
                 .append("            line-height: 1.8;\n")
                 .append("            color: var(--text-color);\n")
-                .append("            background-color: var(--bg-color);\n")
-                .append("            padding-top: 30px;\n")
-                .append("            opacity: 1;\n")
-                .append("            transition: background-color 0.3s ease, color 0.3s ease;\n")
-                .append("            scroll-behavior: smooth;\n")
                 .append("        }\n")
-                // ... 更多基础样式 ...
-                ;
+                .append("        .button {\n")
+                .append("            display: inline-block;\n")
+                .append("            padding: 10px 20px;\n")
+                .append("            margin-top: 20px;\n")
+                .append("            background: var(--primary-color);\n")
+                .append("            color: #fff;\n")
+                .append("            border: none;\n")
+                .append("            border-radius: 25px;\n")
+                .append("            cursor: pointer;\n")
+                .append("            transition: transform 0.3s ease, box-shadow 0.3s ease;\n")
+                .append("        }\n")
+                .append("        .button:hover {\n")
+                .append("            transform: translateY(-3px);\n")
+                .append("            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);\n")
+                .append("        }\n")
+                .append("        @keyframes fadeIn {\n")
+                .append("            from { opacity: 0; transform: scale(0.9); }\n")
+                .append("            to { opacity: 1; transform: scale(1); }\n")
+                .append("        }\n")
+                .append("        @keyframes slideDown {\n")
+                .append("            from { opacity: 0; transform: translateY(-20px); }\n")
+                .append("            to { opacity: 1; transform: translateY(0); }\n")
+                .append("        }\n");
 
-        // 添加额外样式
+        // Append extra styles if provided
         if (extraStyles != null && !extraStyles.isEmpty()) {
-            htmlBuilder.append(extraStyles);
+            htmlBuilder.append(extraStyles).append("\n");
         }
 
         htmlBuilder.append("    </style>\n")
                 .append("</head>\n")
                 .append("<body>\n")
-                .append("    <!-- 页面加载器 -->\n")
-                .append("    <div class=\"page-loader\" id=\"pageLoader\">\n")
-                .append("        <div class=\"loader-spinner\"></div>\n")
-                .append("    </div>\n\n")
-                .append("    <!-- 主题切换按钮 -->\n")
-                .append("    <div class=\"theme-toggle\" id=\"themeToggle\" title=\"切换明暗主题\">\n")
-                .append("        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n")
-                .append("            <path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path>\n")
-                .append("        </svg>\n")
-                .append("    </div>\n\n")
-                .append("    <!-- 内容容器 -->\n")
-                .append("    <div class=\"container fade-in\">\n")
-                .append("        <h1 class=\"slide-up\">").append(escapeHtml(title)).append("</h1>\n")
+                .append("    <div class=\"container\">\n")
+                .append("        <h1>").append(escapeHtml(title)).append("</h1>\n")
                 .append("        <div class=\"content\">\n")
                 .append(content).append("\n")
                 .append("        </div>\n")
-                .append("    </div>\n\n")
+                .append("        <button class=\"button\" onclick=\"alert('Button Clicked!')\">Click Me</button>\n")
+                .append("    </div>\n")
                 .append("    <script>\n")
-                .append("        // 页面加载完成后执行\n")
-                .append("        document.addEventListener('DOMContentLoaded', function() {\n")
-                .append("            // 主题切换功能\n")
-                .append("            const themeToggle = document.getElementById('themeToggle');\n")
-                .append("            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;\n")
-                .append("            \n")
-                .append("            // 检查用户上次的主题偏好\n")
-                .append("            const savedTheme = localStorage.getItem('theme');\n")
-                .append("            if (savedTheme === 'dark' || (!savedTheme && prefersDarkMode)) {\n")
-                .append("                document.documentElement.setAttribute('data-theme', 'dark');\n")
-                .append("            }\n")
-                .append("            \n")
-                .append("            // 设置主题切换事件\n")
-                .append("            themeToggle.addEventListener('click', function() {\n")
-                .append("                const currentTheme = document.documentElement.getAttribute('data-theme');\n")
-                .append("                if (currentTheme === 'dark') {\n")
-                .append("                    document.documentElement.removeAttribute('data-theme');\n")
-                .append("                    localStorage.setItem('theme', 'light');\n")
-                .append("                } else {\n")
-                .append("                    document.documentElement.setAttribute('data-theme', 'dark');\n")
-                .append("                    localStorage.setItem('theme', 'dark');\n")
-                .append("                }\n")
-                .append("            });\n\n");
+                .append("        document.querySelector('.button').addEventListener('click', function() {\n")
+                .append("            alert('You clicked the button!');\n")
+                .append("        });\n");
 
-        // 添加基本的JavaScript代码（省略以避免代码过长）
-        htmlBuilder.append("            // 优化页面加载处理\n")
-                .append("            setTimeout(function() {\n")
-                .append("                document.getElementById('pageLoader').style.opacity = '0';\n")
-                .append("                setTimeout(() => {\n")
-                .append("                    document.getElementById('pageLoader').style.display = 'none';\n")
-                .append("                }, 500);\n")
-                .append("            }, 800);\n")
-                // ... 更多基本脚本 ...
-                ;
-
-        // 添加额外脚本
+        // Append extra scripts if provided
         if (extraScripts != null && !extraScripts.isEmpty()) {
-            htmlBuilder.append(extraScripts);
+            htmlBuilder.append(extraScripts).append("\n");
         }
 
-        htmlBuilder.append("        });\n")
-                .append("    </script>\n")
+        htmlBuilder.append("    </script>\n")
                 .append("</body>\n")
                 .append("</html>");
 
         return htmlBuilder.toString();
     }
+//    private String buildFullHtmlDocument(String title, String content, String extraStyles, String extraScripts) {
+//        StringBuilder htmlBuilder = new StringBuilder();
+//
+//        htmlBuilder.append("<!DOCTYPE html>\n")
+//                .append("<html lang=\"zh-CN\">\n")
+//                .append("<head>\n")
+//                .append("    <meta charset=\"UTF-8\">\n")
+//                .append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
+//                .append("    <title>").append(escapeHtml(title)).append("</title>\n")
+//                .append("    <style>\n");
+//
+//        // 添加基础样式
+//        htmlBuilder.append("        /* CSS变量定义（便于主题切换） */\n")
+//                .append("        :root {\n")
+//                .append("            --primary-color: #3498db;\n")
+//                .append("            --secondary-color: #2c3e50;\n")
+//                .append("            --accent-color: #e74c3c;\n")
+//                .append("            --bg-color: #f8f9fa;\n")
+//                .append("            --text-color: #333;\n")
+//                .append("            --card-bg: #ffffff;\n")
+//                .append("            --border-color: #ddd;\n")
+//                .append("            --shadow-color: rgba(0,0,0,0.1);\n")
+//                .append("            --animation-duration: 1.2s;\n")
+//                .append("            --animation-delay: 0.1s;\n")
+//                .append("        }\n")
+//                .append("        /* 暗色模式主题 */\n")
+//                .append("        [data-theme=\"dark\"] {\n")
+//                .append("            --primary-color: #61dafb;\n")
+//                .append("            --secondary-color: #f1f1f1;\n")
+//                .append("            --accent-color: #ff6b6b;\n")
+//                .append("            --bg-color: #121212;\n")
+//                .append("            --text-color: #e0e0e0;\n")
+//                .append("            --card-bg: #1e1e1e;\n")
+//                .append("            --border-color: #444;\n")
+//                .append("            --shadow-color: rgba(255,255,255,0.05);\n")
+//                .append("        }\n");
+//
+//        // 添加原有的CSS样式（省略以避免代码过长）
+//        htmlBuilder.append("        /* 基础样式 */\n")
+//                .append("        body { \n")
+//                .append("            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n")
+//                .append("            line-height: 1.8;\n")
+//                .append("            color: var(--text-color);\n")
+//                .append("            background-color: var(--bg-color);\n")
+//                .append("            padding-top: 30px;\n")
+//                .append("            opacity: 1;\n")
+//                .append("            transition: background-color 0.3s ease, color 0.3s ease;\n")
+//                .append("            scroll-behavior: smooth;\n")
+//                .append("        }\n")
+//                // ... 更多基础样式 ...
+//                ;
+//
+//        // 添加额外样式
+//        if (extraStyles != null && !extraStyles.isEmpty()) {
+//            htmlBuilder.append(extraStyles);
+//        }
+//
+//        htmlBuilder.append("    </style>\n")
+//                .append("</head>\n")
+//                .append("<body>\n")
+//                .append("    <!-- 页面加载器 -->\n")
+//                .append("    <div class=\"page-loader\" id=\"pageLoader\">\n")
+//                .append("        <div class=\"loader-spinner\"></div>\n")
+//                .append("    </div>\n\n")
+//                .append("    <!-- 主题切换按钮 -->\n")
+//                .append("    <div class=\"theme-toggle\" id=\"themeToggle\" title=\"切换明暗主题\">\n")
+//                .append("        <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n")
+//                .append("            <path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path>\n")
+//                .append("        </svg>\n")
+//                .append("    </div>\n\n")
+//                .append("    <!-- 内容容器 -->\n")
+//                .append("    <div class=\"container fade-in\">\n")
+//                .append("        <h1 class=\"slide-up\">").append(escapeHtml(title)).append("</h1>\n")
+//                .append("        <div class=\"content\">\n")
+//                .append(content).append("\n")
+//                .append("        </div>\n")
+//                .append("    </div>\n\n")
+//                .append("    <script>\n")
+//                .append("        // 页面加载完成后执行\n")
+//                .append("        document.addEventListener('DOMContentLoaded', function() {\n")
+//                .append("            // 主题切换功能\n")
+//                .append("            const themeToggle = document.getElementById('themeToggle');\n")
+//                .append("            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;\n")
+//                .append("            \n")
+//                .append("            // 检查用户上次的主题偏好\n")
+//                .append("            const savedTheme = localStorage.getItem('theme');\n")
+//                .append("            if (savedTheme === 'dark' || (!savedTheme && prefersDarkMode)) {\n")
+//                .append("                document.documentElement.setAttribute('data-theme', 'dark');\n")
+//                .append("            }\n")
+//                .append("            \n")
+//                .append("            // 设置主题切换事件\n")
+//                .append("            themeToggle.addEventListener('click', function() {\n")
+//                .append("                const currentTheme = document.documentElement.getAttribute('data-theme');\n")
+//                .append("                if (currentTheme === 'dark') {\n")
+//                .append("                    document.documentElement.removeAttribute('data-theme');\n")
+//                .append("                    localStorage.setItem('theme', 'light');\n")
+//                .append("                } else {\n")
+//                .append("                    document.documentElement.setAttribute('data-theme', 'dark');\n")
+//                .append("                    localStorage.setItem('theme', 'dark');\n")
+//                .append("                }\n")
+//                .append("            });\n\n");
+//
+//        // 添加基本的JavaScript代码（省略以避免代码过长）
+//        htmlBuilder.append("            // 优化页面加载处理\n")
+//                .append("            setTimeout(function() {\n")
+//                .append("                document.getElementById('pageLoader').style.opacity = '0';\n")
+//                .append("                setTimeout(() => {\n")
+//                .append("                    document.getElementById('pageLoader').style.display = 'none';\n")
+//                .append("                }, 500);\n")
+//                .append("            }, 800);\n")
+//                // ... 更多基本脚本 ...
+//                ;
+//
+//        // 添加额外脚本
+//        if (extraScripts != null && !extraScripts.isEmpty()) {
+//            htmlBuilder.append(extraScripts);
+//        }
+//
+//        htmlBuilder.append("        });\n")
+//                .append("    </script>\n")
+//                .append("</body>\n")
+//                .append("</html>");
+//
+//        return htmlBuilder.toString();
+//    }
 
     /**
      * 确保文件名安全且有效
@@ -435,7 +545,7 @@ public class HtmlGenerationTool {
         if (filename == null || filename.trim().isEmpty()) {
             // 如果没有提供文件名，生成一个基于时间戳和UUID的文件名
             return "html_" + System.currentTimeMillis() + "_" +
-                   UUID.randomUUID().toString().substring(0, 8);
+                    UUID.randomUUID().toString().substring(0, 8);
         }
 
         // 移除不安全字符
@@ -447,7 +557,7 @@ public class HtmlGenerationTool {
     /**
      * 构建美观的HTML文档，包含动效
      *
-     * @param title 页面标题，将显示在h1标签中
+     * @param title       页面标题，将显示在h1标签中
      * @param bodyContent 页面正文内容(不应包含h1标题)
      * @return 完整的HTML文档字符串
      */
@@ -465,10 +575,10 @@ public class HtmlGenerationTool {
     private String escapeHtml(String input) {
         if (input == null) return "";
         return input.replace("&", "&amp;")
-                   .replace("<", "&lt;")
-                   .replace(">", "&gt;")
-                   .replace("\"", "&quot;")
-                   .replace("'", "&#39;");
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 
     /**
@@ -527,8 +637,8 @@ public class HtmlGenerationTool {
                     dp[i][j] = i;
                 } else {
                     dp[i][j] = Math.min(
-                        dp[i - 1][j - 1] + (str1.charAt(i - 1) == str2.charAt(j - 1) ? 0 : 1),
-                        Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1)
+                            dp[i - 1][j - 1] + (str1.charAt(i - 1) == str2.charAt(j - 1) ? 0 : 1),
+                            Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1)
                     );
                 }
             }
@@ -541,7 +651,7 @@ public class HtmlGenerationTool {
      * 处理正文内容，移除重复的标题
      *
      * @param bodyContent 页面正文内容
-     * @param title 页面标题
+     * @param title       页面标题
      * @return 处理后的内容
      */
     private String processContentForTitle(String bodyContent, String title) {
@@ -576,7 +686,7 @@ public class HtmlGenerationTool {
 
                     // 如果h1内容与title相似则移除整个h1标签
                     if (cleanedH1.equalsIgnoreCase(cleanedTitle) ||
-                        similarText(cleanedH1, cleanedTitle)) {
+                            similarText(cleanedH1, cleanedTitle)) {
                         resultContent.append(processedContent.substring(lastEnd, matcher.start()));
                     } else {
                         // 保留不匹配的h1标签

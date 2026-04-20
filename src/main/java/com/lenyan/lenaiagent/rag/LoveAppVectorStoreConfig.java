@@ -7,6 +7,7 @@ import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 
@@ -26,12 +27,14 @@ public class LoveAppVectorStoreConfig {
     private MyKeywordEnricher myKeywordEnricher;
 
     @Bean
+    @Lazy
+// 2. 添加 @Lazy 注解，改为懒加载，避免启动时因 API 超时报错
     VectorStore loveAppVectorStore(EmbeddingModel dashscopeEmbeddingModel) {
         SimpleVectorStore simpleVectorStore = SimpleVectorStore.builder(dashscopeEmbeddingModel).build();
         // 加载文档
         List<Document> documentList = loveAppDocumentLoader.loadMarkdowns();
         // 自主切分文档
-//        List<Document> splitDocuments = myTokenTextSplitter.splitCustomized(documentList);
+        List<Document> splitDocuments = myTokenTextSplitter.splitCustomized(documentList);
         // 自动补充关键词元信息
         List<Document> enrichedDocuments = myKeywordEnricher.enrichDocuments(documentList);
         //todo 这里是存入 内存中的向量数据库

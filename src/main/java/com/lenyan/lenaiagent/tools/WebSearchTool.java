@@ -54,8 +54,8 @@ public class WebSearchTool {
     /**
      * 通过百度搜索查询信息
      */
-    @Tool(description = "Search for information from Baidu Search Engine (Limited to 3 calls per session)")
-    public String searchWeb(@ToolParam(description = "Search query keyword") String query) {
+    @Tool(description = "通过百度搜索引擎查询信息（每个会话最多支持3次调用）")
+    public String searchWeb(@ToolParam(description = "搜索查询关键词") String query) {
         // 检查调用次数限制
         if (searchCallCount >= MAX_SEARCH_CALLS) {
             return "搜索次数已达到限制（" + MAX_SEARCH_CALLS + "次），无法继续使用搜索工具";

@@ -12,8 +12,8 @@ import java.util.List;
  * 基于Mybatis-Plus实现的对话记忆
  * 使用ChatMemoryService进行数据库操作
  */
-//todo 按需打开
-//@Component
+// TODO: 按需打开
+@Component
 @Slf4j
 public class MybatisPlusChatMemory implements ChatMemory {
 
@@ -24,18 +24,37 @@ public class MybatisPlusChatMemory implements ChatMemory {
         log.info("初始化Mybatis-Plus对话记忆");
     }
 
+    /**
+     * 添加消息到对话记忆中
+     *
+     * @param conversationId 对话ID
+     * @param messages       消息列表
+     */
     @Override
     public void add(String conversationId, List<Message> messages) {
         chatMemoryService.addMessages(conversationId, messages);
     }
 
+    /**
+     * 获取对话记忆中的消息
+     *
+     * @param conversationId 对话ID
+     * @param lastN          获取最近的消息数量
+     * @return 消息列表
+     */
     @Override
     public List<Message> get(String conversationId, int lastN) {
         return chatMemoryService.getMessages(conversationId, lastN);
     }
 
+    /**
+     * 清除指定对话的记忆
+     *
+     * @param conversationId 对话ID
+     */
     @Override
     public void clear(String conversationId) {
         chatMemoryService.clearMessages(conversationId);
     }
 }
+

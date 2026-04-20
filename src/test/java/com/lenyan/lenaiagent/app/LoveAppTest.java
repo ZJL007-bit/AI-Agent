@@ -129,7 +129,7 @@ class LoveAppTest {
         testMessage("今天是什么日期？请用yyyy-MM-dd格式告诉我");
         testMessage("我们是2023年5月20日认识的，请计算我们在一起100天和1周年纪念日分别是哪天");
     }
-
+    @Test
     private void testMessage(String message) {
         String chatId = UUID.randomUUID().toString();
         String answer = loveApp.doChatWithTools(message, chatId);

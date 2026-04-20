@@ -81,7 +81,7 @@
               <div class="menu-icon manus">
                 <icon-robot />
               </div>
-              <span class="menu-text">AI 超级智能体</span>
+              <span class="menu-text">AI 工具智能体</span>
               <span class="menu-badge">AI</span>
             </div>
             
@@ -164,7 +164,7 @@ export default {
     const pageTitles = {
       '/home': '主页',
       '/love-app': 'AI 恋爱大师',
-      '/manus-app': 'AI 超级智能体',
+      '/manus-app': 'AI 工具智能体',
       '/exam-app': '智慧答题助手',
       '/health-app': '云医通健康助手'
     };
@@ -194,7 +194,7 @@ export default {
     };
     
     const goHome = () => {
-      router.push('/home');
+      router.push('/');
     };
     
     return {

@@ -15,39 +15,45 @@ import org.springframework.stereotype.Component;
 public class QuizAssistant extends ToolCallAgent {
 
     @Autowired
-    public QuizAssistant(@Qualifier("allTools") ToolCallback[] allTools, 
+    public QuizAssistant(@Qualifier("allTools") ToolCallback[] allTools,
                          @Qualifier("dashscopeChatModel") ChatModel dashscopeChatModel) {
         super(allTools);
-        
-        // 基础配置
-        this.setName("quizAssistant");
-        this.setMaxSteps(15);
-        this.setDuplicateThreshold(3);
-        
+
+
+        // 基础配置：设置智能体的名称、最大执行步骤数和重复阈值
+        this.setName("智慧问答"); // 设置智能体名称
+        this.setMaxSteps(15); // 设置最大执行步骤数
+        this.setDuplicateThreshold(3); // 设置重复内容的阈值
+
         // 提示词设置
         this.setSystemPrompt(
-            "You are a professional assessment analysis assistant specialized in interpreting various test results and providing personalized analysis. " +
-            "Your goal is to help users understand their assessment outcomes, analyze personal characteristics, " +
-            "and offer targeted recommendations and improvement strategies. " +
-            "You will adapt your analysis approach based on the assessment type (e.g., personality assessment, competency evaluation, emotional assessment) " +
-            "to ensure the process is professional, comprehensive, and insightful. " +
-            "Your responses should be well-structured, intuitive, and easy to understand. " +
-            "When necessary, generate visually rich PDF reports with charts and images."
+                "你是智慧答题助手，专注于学科辅导与测评深度分析。你的目标是帮助用户高效解决学习难题，并提供专业的测评解读。\n\n" +
+                        "## 核心能力\n" +
+                        "- 📚 **学科问题解答**：精通数学、英语、物理、化学等多学科知识，提供准确答案。\n" +
+                        "- 🔍 **复杂题目分析**：拆解复杂问题，提供清晰的解题思路与步骤，不仅仅是给答案。\n" +
+                        "- 📊 **测评结果解读**：专业解读性格测试、能力评估等各类测评结果，挖掘深层特征。\n" +
+                        "- 📝 **个性化分析报告**：根据用户数据生成定制化的学习与能力分析报告。\n" +
+                        "- 📄 **PDF 可视化报告**：生成包含图表、图片的专业 PDF 报告，辅助学习与展示。\n\n" +
+                        "## 工作规则\n" +
+                        "1. **解题优先**：遇到具体题目，先分析考点，再给出步骤清晰的解答。\n" +
+                        "2. **工具辅助**：遇到需要生成报告或复杂计算的场景，主动调用 PDF 生成或计算工具。\n" +
+                        "3. **结构化输出**：回答应条理清晰，使用 Markdown 格式增强可读性。\n" +
+                        "4. **友好引导**：在解答后提供延伸建议，帮助用户举一反三。\n" +
+                        "5. **适时终止**：任务完成后调用 doTerminate 结束对话。"
         );
-
 
         this.setNextStepPrompt(
-                "Based on user needs, proactively select the most appropriate tool or combination of tools. " +
-                "For complex tasks, you can break down the problem and use different tools step by step to solve it. " +
-                "After using each tool, clearly explain the execution results and suggest the next steps. " +
-                "If you want to stop the interaction at any point, use the `terminate` tool/function call."
+                "根据用户输入判断意图：\n" +
+                        "- 若是具体题目：进行知识点拆解 -> 提供解题步骤 -> 总结考点。\n" +
+                        "- 若是测评数据：分析数据维度 -> 给出解读结论 -> 生成 PDF 报告。\n" +
+                        "- 完成后务必调用 doTerminate。"
         );
-        
+
         // 初始化对话客户端
         this.setChatClient(
-            ChatClient.builder(dashscopeChatModel)
-                .defaultAdvisors(new MyLoggerAdvisor())
-                .build()
+                ChatClient.builder(dashscopeChatModel)
+                        .defaultAdvisors(new MyLoggerAdvisor())
+                        .build()
         );
     }
 } 

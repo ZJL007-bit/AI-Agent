@@ -2,8 +2,6 @@ package com.lenyan.lenaiagent.controller;
 
 
 import com.lenyan.lenaiagent.agent.LenHealthAssistant;
-import com.lenyan.lenaiagent.agent.LenManus;
-import com.lenyan.lenaiagent.agent.QuizAssistant;
 import com.lenyan.lenaiagent.app.LoveApp;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.model.ChatModel;
@@ -18,9 +16,12 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 
+/**
+ * 恋爱助手应用控制器
+ */
 @RestController
-@RequestMapping("/ai")
-public class AiController {
+@RequestMapping("/ai/love_app")
+public class LoveAppController {
 
     @Resource
     private LoveApp loveApp;
@@ -39,7 +40,7 @@ public class AiController {
      * @param chatId 会话ID
      * @return 完整的AI回复字符串
      */
-    @GetMapping("/love_app/chat/sync")
+    @GetMapping("/chat/sync")
     public String doChatWithLoveAppSync(String message, String chatId) {
         return loveApp.doChat(message, chatId);
     }
@@ -52,8 +53,9 @@ public class AiController {
      * @param message 用户消息
      * @param chatId 会话ID
      * @return 字符串类型的响应式流
+     *
      */
-    @GetMapping(value = "/love_app/chat/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/chat/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> doChatWithLoveAppSSE(String message, String chatId) {
         return loveApp.doChatByStream(message, chatId);
     }
@@ -67,7 +69,7 @@ public class AiController {
      * @param chatId 会话ID
      * @return ServerSentEvent 类型的响应式流
      */
-    @GetMapping(value = "/love_app/chat/server_sent_event", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/chat/server_sent_event", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> doChatWithLoveAppServerSentEvent(String message, String chatId) {
         return loveApp.doChatByStream(message, chatId)
                 .map(chunk -> ServerSentEvent.<String>builder()
@@ -85,7 +87,7 @@ public class AiController {
      * @param chatId 会话ID
      * @return SseEmitter 对象
      */
-    @GetMapping(value = "/love_app/chat/sse_emitter", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/chat/sse_emitter", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter doChatWithLoveAppServerSseEmitter(String message, String chatId) {
         // 创建一个超时时间较长的 SseEmitter
         SseEmitter sseEmitter = new SseEmitter(180000L); // 3 分钟超时
@@ -107,39 +109,4 @@ public class AiController {
         return sseEmitter;
     }
 
-    /**
-     * 流式调用 Manus 超级智能体
-     *
-     * @param message
-     * @return
-     */
-    @GetMapping("/manus/chat")
-    public SseEmitter doChatWithManus(String message) {
-        LenManus lenManus = new LenManus(allTools, dashscopeChatModel);
-        return lenManus.runStream(message);
-    }
-
-    /**
-     * 流式调用 Manus 超级智能体
-     *
-     * @param message
-     * @return
-     */
-    @GetMapping("/quiz/chat")
-    public SseEmitter doChatWithquiz(String message) {
-        QuizAssistant quizAssistant = new QuizAssistant(allTools, dashscopeChatModel);
-        return quizAssistant.runStream(message);
-    }
-
-    /**
-     * 流式调用 云医通健康助手
-     *
-     * @param message
-     * @return
-     */
-    @GetMapping("/health/chat")
-    public SseEmitter doChatWithHealthAssistant(String message) {
-        LenHealthAssistant healthAssistant = new LenHealthAssistant(allTools, dashscopeChatModel);
-        return healthAssistant.runStream(message);
-    }
 }

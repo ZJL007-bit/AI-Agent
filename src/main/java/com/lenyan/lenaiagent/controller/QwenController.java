@@ -154,7 +154,7 @@ public class QwenController {
         
         // 设置默认的系统提示词（如果未指定）
         if (request.getSystemPrompt() == null || request.getSystemPrompt().isEmpty()) {
-            request.setSystemPrompt("You are a helpful assistant specialized in audio analysis.");
+            request.setSystemPrompt("您好，我是专注于音频分析的AI助手。");
         }
         
         // 调用服务

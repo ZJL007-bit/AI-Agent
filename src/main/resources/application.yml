@@ -5,7 +5,7 @@ spring:
     active: local
   datasource:
     mysql:
-      url: ${DB_URL:jdbc:mysql://localhost:3306/lenai?useSSL=false}
+      url: ${DB_URL:jdbc:mysql://localhost:3306/lenai?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai}
       username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD:20020801ZJL.}
       driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
@@ -14,7 +14,6 @@ spring:
       username: ${PG_USERNAME:postgres}
       password: ${PG_PASSWORD:postgres}
       driver-class-name: org.postgresql.Driver
-
 
 server:
   port: 8102

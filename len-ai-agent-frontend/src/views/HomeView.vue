@@ -135,7 +135,7 @@ export default {
       },
       {
         key: 'manus',
-        title: 'AI 超级智能体',
+        title: 'AI工具智能体',
         description: '强大的智能助手，可以回答问题，提供建议、协助创作和分析信息。',
         badge: 'AI',
         icon: IconBulb,

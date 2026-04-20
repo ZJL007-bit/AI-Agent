@@ -86,15 +86,17 @@ export default {
     IconDelete
   },
   setup() {
+    const CHAT_ID_KEY = 'health_app_chat_id';
     const chatId = ref('');
     const currentEventSource = ref(null);
     const inputValue = ref('');
     const isLoading = ref(false);
     const messages = ref([]);
-    const currentSteps = ref([]);
+    const stepMessageIndexes = ref({});
+    const finalMessageIndex = ref(null);
     
     // 获取或创建聊天 ID
-    chatId.value = getOrCreateChatId('health_app_chat_id');
+    chatId.value = getOrCreateChatId(CHAT_ID_KEY);
     
     // 从localStorage加载历史消息
     const loadMessages = () => {
@@ -114,43 +116,19 @@ export default {
     
     const clearMessages = () => {
       if (window.confirm('您确定要清除所有聊天记录吗？此操作不可恢复。')) {
+        if (currentEventSource.value) {
+          currentEventSource.value.close();
+          currentEventSource.value = null;
+        }
+
         messages.value = [];
         localStorage.removeItem(`chat_messages_${chatId.value}`);
+        localStorage.removeItem(CHAT_ID_KEY);
+        chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+        stepMessageIndexes.value = {};
+        finalMessageIndex.value = null;
+        isLoading.value = false;
       }
-    };
-    
-    // 解析步骤函数
-    const parseSteps = (text) => {
-      // 使用正则表达式匹配 "Step X:" 格式
-      const stepPattern = /Step \d+: 工具\[\w+\].*?(?=Step \d+:|$)/gs;
-      
-      // 尝试找到所有步骤
-      let matches;
-      try {
-        matches = Array.from(text.matchAll(stepPattern));
-      } catch (e) {
-        console.error('正则匹配错误:', e);
-        return [text];
-      }
-      
-      // 如果没有匹配到步骤，检查是否包含部分步骤格式
-      if (matches.length === 0) {
-        if (text.includes('Step') && text.includes('工具[')) {
-          // 可能是不完整的步骤，返回原文本
-          return [text];
-        }
-        
-        // 检查非步骤格式的其他类型消息
-        if (text.trim()) {
-          return [text];
-        }
-        
-        return [];
-      }
-      
-      // 创建步骤数组并确保每个步骤都是完整的
-      const steps = matches.map(match => match[0].trim());
-      return steps;
     };
     
     // 处理键盘事件
@@ -190,58 +168,64 @@ export default {
         currentEventSource.value.close();
       }
       
-      // 重置步骤数组
-      currentSteps.value = [];
-      let accumulatedResponse = '';
+      // 重置流式消息索引
+      stepMessageIndexes.value = {};
+      finalMessageIndex.value = null;
       
       // 建立新的 SSE 连接
       const eventSource = connectToHealthChat(
         message,
         (data) => {
-          // 累加新收到的消息片段
-          accumulatedResponse += data;
-          
-          // 解析出步骤
-          const steps = parseSteps(accumulatedResponse);
-          
-          // 更新步骤数组
-          if (steps.length > currentSteps.value.length) {
-            // 有新的步骤
-            for (let i = currentSteps.value.length; i < steps.length; i++) {
-              // 为每个新步骤创建一个新的响应
+          const text = typeof data === 'string' ? data : String(data || '');
+          if (!text.trim()) {
+            return;
+          }
+
+          const trimmedText = text.trim();
+          const stepMatch = trimmedText.match(/^Step\s+(\d+):/);
+
+          if (stepMatch) {
+            const stepNumber = Number(stepMatch[1]);
+            const existingIndex = stepMessageIndexes.value[stepNumber];
+
+            if (typeof existingIndex === 'number' && messages.value[existingIndex]) {
+              messages.value[existingIndex].content = trimmedText;
+            } else {
               const stepMessage = {
-                content: steps[i],
+                content: trimmedText,
                 isUser: false,
-                timestamp: Date.now() + i
+                timestamp: Date.now() + stepNumber
               };
               messages.value.push(stepMessage);
+              stepMessageIndexes.value[stepNumber] = messages.value.length - 1;
             }
-            currentSteps.value = steps;
-          } else if (steps.length > 0) {
-            // 最后一个步骤有更新
-            const lastStepIndex = messages.value.findIndex(
-              msg => !msg.isUser && msg.content.includes(currentSteps.value[currentSteps.value.length - 1].substring(0, 20))
-            );
-            
-            if (lastStepIndex !== -1) {
-              messages.value[lastStepIndex].content = steps[steps.length - 1];
-            }
-            
-            currentSteps.value = steps;
+          } else if (typeof finalMessageIndex.value === 'number' && messages.value[finalMessageIndex.value]) {
+            messages.value[finalMessageIndex.value].content += text;
+          } else {
+            const finalMessage = {
+              content: text,
+              isUser: false,
+              timestamp: Date.now() + 999
+            };
+            messages.value.push(finalMessage);
+            finalMessageIndex.value = messages.value.length - 1;
           }
           
           saveMessages();
         },
         (error) => {
-          console.error('SSE连接错误:', error);
+          console.error('SSE 连接错误:', error);
           isLoading.value = false;
+          currentEventSource.value = null;
         }
       );
       
       // 当连接关闭时
       eventSource.addEventListener('done', () => {
         isLoading.value = false;
+        saveMessages();
         eventSource.close();
+        currentEventSource.value = null;
       });
       
       // 保存当前连接，以便后续可以关闭
@@ -275,12 +259,52 @@ export default {
   display: flex;
   flex-direction: column;
   padding: var(--space-xl);
-  background: var(--color-gray-50);
+  background:
+    radial-gradient(circle at 12% 10%, rgba(52, 211, 153, 0.2) 0%, rgba(52, 211, 153, 0) 42%),
+    radial-gradient(circle at 86% 86%, rgba(16, 185, 129, 0.17) 0%, rgba(16, 185, 129, 0) 46%),
+    linear-gradient(150deg, #f2fff9 0%, #ecfbf4 45%, #f7fff9 100%);
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 [data-theme="dark"] .app-page {
-  background: var(--bg-primary);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(5, 150, 105, 0.24) 0%, rgba(5, 150, 105, 0) 44%),
+    radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 50%),
+    linear-gradient(150deg, #101b16 0%, #13231d 52%, #0f1a15 100%);
+}
+
+.app-page::before,
+.app-page::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-page::before {
+  width: 360px;
+  height: 360px;
+  right: -110px;
+  top: -130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.2) 0%, rgba(52, 211, 153, 0) 70%);
+}
+
+.app-page::after {
+  width: 420px;
+  height: 420px;
+  left: -160px;
+  bottom: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(16, 185, 129, 0) 74%);
+}
+
+.page-header,
+.chat-container {
+  position: relative;
+  z-index: 1;
 }
 
 .page-header {
@@ -360,10 +384,18 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 255, 252, 0.84) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(5, 150, 105, 0.13);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 24px 48px rgba(5, 150, 105, 0.12);
   overflow: hidden;
+}
+
+[data-theme="dark"] .chat-container {
+  background: linear-gradient(180deg, rgba(20, 42, 32, 0.84) 0%, rgba(18, 34, 28, 0.9) 100%);
+  border-color: rgba(52, 211, 153, 0.14);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.42);
 }
 
 .chat-description {
@@ -378,6 +410,14 @@ export default {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-xl);
+}
+
+.chat-content {
+  background: linear-gradient(180deg, rgba(233, 252, 244, 0.5) 0%, rgba(255, 255, 255, 0) 52%);
+}
+
+[data-theme="dark"] .chat-content {
+  background: linear-gradient(180deg, rgba(16, 45, 35, 0.36) 0%, rgba(16, 45, 35, 0) 52%);
 }
 
 .chat-content::-webkit-scrollbar {

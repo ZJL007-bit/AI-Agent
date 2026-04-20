@@ -98,6 +98,7 @@ export default {
     IconDelete
   },
   setup() {
+    const CHAT_ID_KEY = 'love_app_chat_id';
     const chatId = ref('');
     const currentEventSource = ref(null);
     const inputValue = ref('');
@@ -105,7 +106,7 @@ export default {
     const messages = ref([]);
     
     // 获取或创建聊天 ID
-    chatId.value = getOrCreateChatId('love_app_chat_id');
+    chatId.value = getOrCreateChatId(CHAT_ID_KEY);
     
     // 从localStorage加载历史消息
     const loadMessages = () => {
@@ -125,8 +126,16 @@ export default {
     
     const clearMessages = () => {
       if (window.confirm('你确定要清除所有聊天记录吗？此操作不可恢复。')) {
+        if (currentEventSource.value) {
+          currentEventSource.value.close();
+          currentEventSource.value = null;
+        }
+
         messages.value = [];
         localStorage.removeItem(`chat_messages_${chatId.value}`);
+        localStorage.removeItem(CHAT_ID_KEY);
+        chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+        isLoading.value = false;
       }
     };
     
@@ -224,7 +233,7 @@ export default {
           saveMessages();
         },
         (error) => {
-          console.error('SSE连接错误:', error);
+          console.error('SSE 连接错误:', error);
           isLoading.value = false;
         }
       );
@@ -266,12 +275,52 @@ export default {
   display: flex;
   flex-direction: column;
   padding: var(--space-xl);
-  background: var(--color-gray-50);
+  background:
+    radial-gradient(circle at 14% 8%, rgba(244, 114, 182, 0.2) 0%, rgba(244, 114, 182, 0) 42%),
+    radial-gradient(circle at 88% 86%, rgba(225, 29, 72, 0.16) 0%, rgba(225, 29, 72, 0) 46%),
+    linear-gradient(145deg, #fff7fb 0%, #fff0f6 45%, #fff9fc 100%);
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 [data-theme="dark"] .app-page {
-  background: var(--bg-primary);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(225, 29, 72, 0.23) 0%, rgba(225, 29, 72, 0) 44%),
+    radial-gradient(circle at 88% 90%, rgba(244, 114, 182, 0.18) 0%, rgba(244, 114, 182, 0) 50%),
+    linear-gradient(145deg, #1f1119 0%, #26121c 52%, #1b0f16 100%);
+}
+
+.app-page::before,
+.app-page::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-page::before {
+  width: 360px;
+  height: 360px;
+  right: -100px;
+  top: -130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.22) 0%, rgba(244, 114, 182, 0) 70%);
+}
+
+.app-page::after {
+  width: 420px;
+  height: 420px;
+  left: -150px;
+  bottom: -170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.16) 0%, rgba(225, 29, 72, 0) 74%);
+}
+
+.page-header,
+.chat-container {
+  position: relative;
+  z-index: 1;
 }
 
 .page-header {
@@ -351,16 +400,32 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 247, 251, 0.84) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(225, 29, 72, 0.13);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 24px 48px rgba(225, 29, 72, 0.13);
   overflow: hidden;
+}
+
+[data-theme="dark"] .chat-container {
+  background: linear-gradient(180deg, rgba(45, 21, 33, 0.86) 0%, rgba(38, 18, 28, 0.92) 100%);
+  border-color: rgba(244, 114, 182, 0.15);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.42);
 }
 
 .chat-content {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-xl);
+}
+
+.chat-content {
+  background: linear-gradient(180deg, rgba(255, 236, 246, 0.52) 0%, rgba(255, 255, 255, 0) 52%);
+}
+
+[data-theme="dark"] .chat-content {
+  background: linear-gradient(180deg, rgba(56, 22, 38, 0.36) 0%, rgba(56, 22, 38, 0) 52%);
 }
 
 .chat-content {

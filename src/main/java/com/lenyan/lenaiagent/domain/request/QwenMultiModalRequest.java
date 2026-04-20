@@ -37,9 +37,9 @@ public class QwenMultiModalRequest {
     @Schema(description = "音频URL", example = "https://dashscope.oss-cn-beijing.aliyuncs.com/audios/welcome.mp3")
     private String audioUrl;
 
-    @Schema(description = "系统提示词", example = "You are a helpful assistant.")
+    @Schema(description = "系统提示词", example = "您好，我是您的AI助手。")
     @Builder.Default
-    private String systemPrompt = "You are a helpful assistant.";
+    private String systemPrompt = "您好，我是您的AI助手。";
 
     @Schema(description = "历史消息列表")
     @Builder.Default

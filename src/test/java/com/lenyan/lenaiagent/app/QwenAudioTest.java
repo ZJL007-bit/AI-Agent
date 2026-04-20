@@ -45,7 +45,7 @@ public class QwenAudioTest {
                 .conversationId("test-audio-" + System.currentTimeMillis())
                 .textContent("请你分析一下这个音频讲述了什么内容")
                 .audioUrl("https://dashscope.oss-cn-beijing.aliyuncs.com/audios/welcome.mp3")
-                .systemPrompt("You are a helpful assistant.")
+                .systemPrompt("您好，我是您的AI助手。")
                 .type("AUDIO")
                 .build();
 
