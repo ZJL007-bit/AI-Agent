@@ -5,6 +5,8 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.markdown.MarkdownDocumentReader;
 import org.springframework.ai.reader.markdown.config.MarkdownDocumentReaderConfig;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +26,7 @@ import java.util.List;
  * 5. QueryRewriter.java - 查询重写器
  * 在检索前用 AI 将用户口语化的问题重写为更适合检索的规范化查询语句。
  * 6. LoveAppContextualQueryAugmenterFactory.java - 查询增强工厂
- * 创建空上下文提示模板，当检索不到相关内容时，让 AI 回复"只能回答恋爱相关问题"。
+ * 创建空上下文提示模板，当检索不到相关内容时，让 AI 回复“只能回答恋爱相关问题”。
  * 7. LoveAppRagCustomAdvisorFactory.java - 自定义 RAG 顾问工厂
  * 构建本地向量检索顾问，支持按状态（status）过滤文档、设置相似度阈值和返回数量。
  * 8. LoveAppRagCloudAdvisorConfig.java - 云端 RAG 配置
@@ -36,10 +38,11 @@ import java.util.List;
 @Slf4j
 public class LoveAppDocumentLoader {
 
-    private final ResourcePatternResolver resourcePatternResolver;
+    private final ResourceLoader resourceLoader;
 
-    LoveAppDocumentLoader(ResourcePatternResolver resourcePatternResolver) {
-        this.resourcePatternResolver = resourcePatternResolver;
+    // 注入 ResourceLoader（Spring 容器内建可用）
+    LoveAppDocumentLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
     /**
@@ -49,7 +52,9 @@ public class LoveAppDocumentLoader {
     public List<Document> loadMarkdowns() {
         List<Document> allDocuments = new ArrayList<>();
         try {
-            Resource[] resources = resourcePatternResolver.getResources("classpath:document/*.md");
+            // 使用 ResourceLoader 创建可解析通配符的 ResourcePatternResolver
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(resourceLoader);
+            Resource[] resources = resolver.getResources("classpath:document/*.md");
             for (Resource resource : resources) {
                 String filename = resource.getFilename();
                 //提取文档倒数第 3 和第 2 个字作为标签

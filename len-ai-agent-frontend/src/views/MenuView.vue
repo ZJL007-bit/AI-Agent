@@ -13,13 +13,13 @@
           </div>
         </div>
       </div>
-      
+
       <div class="header-center">
         <div class="breadcrumb">
           <span class="breadcrumb-current">{{ currentPageTitle }}</span>
         </div>
       </div>
-      
+
       <div class="header-right">
         <div class="header-actions">
           <a-tooltip content="深色模式" position="bottom">
@@ -36,7 +36,7 @@
         </div>
       </div>
     </header>
-    
+
     <!-- 主内容区 -->
     <div class="app-body">
       <!-- 侧边栏 -->
@@ -44,80 +44,66 @@
         <div class="sidebar-menu">
           <div class="menu-group">
             <div class="menu-group-title">导航</div>
-            <div 
-              class="menu-item" 
-              :class="{ active: currentRoute === '/home' }"
-              @click="goTo('/menu/home')"
-            >
+            <div class="menu-item menu-item-home" :class="{ active: isActiveRoute('/menu/home') }"
+              @click="goTo('/menu/home')">
               <div class="menu-icon">
                 <icon-home />
               </div>
               <span class="menu-text">主页</span>
             </div>
           </div>
-          
+
           <div class="menu-divider"></div>
-          
+
           <div class="menu-group">
             <div class="menu-group-title">智能体应用</div>
-            
-            <div 
-              class="menu-item" 
-              :class="{ active: currentRoute === '/love-app' }"
-              @click="goTo('/menu/love-app')"
-            >
+
+            <div class="menu-item menu-item-coffee" :class="{ active: isActiveRoute('/menu/coffee-shop') }"
+              @click="goTo('/coffee-shop')">
+              <div class="menu-icon coffee">
+                <icon-star />
+              </div>
+              <span class="menu-text">咖啡店智能客服</span>
+              <span class="menu-badge">服务</span>
+            </div>
+            <div class="menu-item menu-item-love" :class="{ active: isActiveRoute('/menu/love-app') }"
+              @click="goTo('/menu/love-app')">
               <div class="menu-icon love">
                 <icon-heart />
               </div>
               <span class="menu-text">AI 恋爱大师</span>
               <span class="menu-badge">情感</span>
             </div>
-            
-            <div 
-              class="menu-item" 
-              :class="{ active: currentRoute === '/manus-app' }"
-              @click="goTo('/menu/manus-app')"
-            >
+
+            <div class="menu-item menu-item-manus" :class="{ active: isActiveRoute('/menu/manus-app') }"
+              @click="goTo('/menu/manus-app')">
               <div class="menu-icon manus">
                 <icon-robot />
               </div>
               <span class="menu-text">AI 工具智能体</span>
               <span class="menu-badge">AI</span>
             </div>
-            
-            <div 
-              class="menu-item" 
-              :class="{ active: currentRoute === '/exam-app' }"
-              @click="goTo('/menu/exam-app')"
-            >
-              <div class="menu-icon exam">
-                <icon-book />
-              </div>
-              <span class="menu-text">智慧答题助手</span>
-              <span class="menu-badge">学习</span>
-            </div>
-            
-            <div 
-              class="menu-item" 
-              :class="{ active: currentRoute === '/health-app' }"
-              @click="goTo('/menu/health-app')"
-            >
+
+            <div class="menu-item menu-item-health" :class="{ active: isActiveRoute('/menu/health-app') }"
+              @click="goTo('/menu/health-app')">
               <div class="menu-icon health">
                 <icon-heart-fill />
               </div>
               <span class="menu-text">云医通健康助手</span>
               <span class="menu-badge">健康</span>
             </div>
+
+
           </div>
         </div>
-        
+
         <div class="sidebar-footer">
           <div class="version-info">
             <span>Len-AI v1.0.0</span>
           </div>
         </div>
       </aside>
-      
+
       <!-- 内容区 -->
       <main class="app-main">
         <router-view v-slot="{ Component }">
@@ -133,15 +119,15 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { 
-  IconHeart, 
-  IconRobot, 
-  IconBook,
+import {
+  IconHeart,
+  IconRobot,
   IconHome,
   IconHeartFill,
   IconSun,
   IconMoon,
-  IconUser
+  IconUser,
+  IconStar
 } from '@arco-design/web-vue/es/icon';
 
 export default {
@@ -149,32 +135,42 @@ export default {
   components: {
     IconHeart,
     IconRobot,
-    IconBook,
     IconHome,
     IconHeartFill,
     IconSun,
     IconMoon,
-    IconUser
+    IconUser,
+    IconStar
   },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const theme = ref('light');
-    
+
     const pageTitles = {
+      '/': '主页',
       '/home': '主页',
-      '/love-app': 'AI 恋爱大师',
-      '/manus-app': 'AI 工具智能体',
-      '/exam-app': '智慧答题助手',
-      '/health-app': '云医通健康助手'
+      '/menu/home': '主页',
+      '/coffee-shop': '咖啡店智能客服',
+      '/menu/love-app': 'AI 恋爱大师',
+      '/menu/manus-app': 'AI 工具智能体',
+      '/menu/health-app': '云医通健康助手'
+      
     };
-    
+
     const currentPageTitle = computed(() => {
       return pageTitles[route.path] || '主页';
     });
-    
+
     const currentRoute = computed(() => route.path);
-    
+
+    const isActiveRoute = (targetPath) => {
+      if (targetPath === '/menu/home') {
+        return ['/', '/home', '/menu/home'].includes(currentRoute.value);
+      }
+      return currentRoute.value === targetPath || currentRoute.value.startsWith(`${targetPath}/`);
+    };
+
     onMounted(() => {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme) {
@@ -182,25 +178,26 @@ export default {
         document.documentElement.setAttribute('data-theme', savedTheme);
       }
     });
-    
+
     const toggleTheme = () => {
       theme.value = theme.value === 'light' ? 'dark' : 'light';
       localStorage.setItem('theme', theme.value);
       document.documentElement.setAttribute('data-theme', theme.value);
     };
-    
+
     const goTo = (path) => {
       router.push(path);
     };
-    
+
     const goHome = () => {
       router.push('/');
     };
-    
+
     return {
       theme,
       currentPageTitle,
       currentRoute,
+      isActiveRoute,
       toggleTheme,
       goTo,
       goHome
@@ -216,7 +213,9 @@ export default {
   box-sizing: border-box;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
 }
 
@@ -411,6 +410,26 @@ html, body, #app {
   color: var(--color-primary);
 }
 
+.menu-item.menu-item-home.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.menu-item.menu-item-love.active {
+  background: var(--color-love-light);
+  color: var(--color-love);
+}
+
+.menu-item.menu-item-manus.active {
+  background: var(--color-manus-light);
+  color: var(--color-manus);
+}
+
+.menu-item.menu-item-health.active {
+  background: var(--color-health-light);
+  color: var(--color-health);
+}
+
 .menu-icon {
   width: 28px;
   height: 28px;
@@ -449,16 +468,6 @@ html, body, #app {
   color: white;
 }
 
-.menu-icon.exam {
-  background: var(--color-exam-light);
-  color: var(--color-exam);
-}
-
-.menu-item.active .menu-icon.exam {
-  background: var(--color-exam);
-  color: white;
-}
-
 .menu-icon.health {
   background: var(--color-health-light);
   color: var(--color-health);
@@ -466,6 +475,16 @@ html, body, #app {
 
 .menu-item.active .menu-icon.health {
   background: var(--color-health);
+  color: white;
+}
+
+.menu-icon.coffee {
+  background: var(--color-coffee-light);
+  color: var(--color-coffee);
+}
+
+.menu-item.active .menu-icon.coffee {
+  background: var(--color-coffee);
   color: white;
 }
 
@@ -487,6 +506,18 @@ html, body, #app {
 .menu-item.active .menu-badge {
   background: white;
   color: var(--color-primary);
+}
+
+.menu-item.menu-item-love.active .menu-badge {
+  color: var(--color-love);
+}
+
+.menu-item.menu-item-manus.active .menu-badge {
+  color: var(--color-manus);
+}
+
+.menu-item.menu-item-health.active .menu-badge {
+  color: var(--color-health);
 }
 
 .sidebar-footer {

@@ -1,555 +1,636 @@
 <template>
-  <div class="home-view">
+  <div class="home">
     <div class="home-container">
-      <!-- 欢迎区 -->
-      <div class="welcome-section">
-        <div class="welcome-card">
-          <div class="welcome-content">
-            <div class="welcome-icon">
-              <icon-robot />
-            </div>
-            <div class="welcome-text">
-              <h1>欢迎使用智能矩阵应用平台</h1>
-              <p>选择下方智能体开始对话之旅</p>
-            </div>
-          </div>
+      <!-- ======== Hero ======== -->
+      <section class="hero">
+        <div class="hero-badge">
+          <span class="badge-pulse"></span>AI 智能体平台
         </div>
-      </div>
-      
-      <!-- 应用卡片区 -->
-      <div class="apps-section">
-        <h2 class="section-title">智能体应用</h2>
-        
+        <h1 class="hero-title">
+          选择你的<span class="title-grad">AI 伙伴</span>
+        </h1>
+        <p class="hero-sub">
+          四大智能体协同运作，覆盖商业、情感、工具、健康<br/>每个场景，都有一位懂你的 AI 在等候
+        </p>
+        <div class="hero-nums">
+          <div class="hn"><strong>4</strong> <span>智能体</span></div>
+          <i></i>
+          <div class="hn"><strong>7×24</strong> <span>全天在线</span></div>
+          <i></i>
+          <div class="hn"><strong>10K+</strong> <span>活跃用户</span></div>
+        </div>
+      </section>
+
+      <!-- ======== 应用卡片 ======== -->
+      <section class="sec">
+        <div class="sec-head">
+          <h2>智能体矩阵</h2>
+          <p>点击卡片，开启你的 AI 对话之旅</p>
+        </div>
         <div class="apps-grid">
-          <div 
-            v-for="app in aiApps" 
+          <div
+            v-for="(app, i) in aiApps"
             :key="app.key"
             class="app-card"
-            :class="`app-${app.key}`"
+            :style="{ animationDelay: i * 0.08 + 's' }"
             @click="goTo(app.route)"
           >
-            <div class="app-card-header">
-              <div class="app-icon" :class="`icon-${app.key}`">
-                <component :is="app.icon" />
-              </div>
-              <div class="app-badge" :class="`badge-${app.key}`">
-                {{ app.badge }}
-              </div>
+            <div class="ac-bar" :class="'bar-' + app.key"></div>
+            <div class="ac-icon" :class="'icon-' + app.key">
+              <component :is="app.icon" />
             </div>
-            
-            <div class="app-card-body">
-              <h3 class="app-title">{{ app.title }}</h3>
-              <p class="app-desc">{{ app.description }}</p>
-            </div>
-            
-            <div class="app-card-footer">
-              <span class="start-btn">
-                开始对话
-                <icon-right />
-              </span>
+            <div class="ac-main">
+              <div class="ac-head">
+                <h3>{{ app.title }}</h3>
+                <span class="ac-badge" :class="'badge-' + app.key">{{ app.badge }}</span>
+              </div>
+              <p>{{ app.description }}</p>
+              <div class="ac-foot">
+                <div class="ac-tags">
+                  <span v-for="tag in app.tags" :key="tag">{{ tag }}</span>
+                </div>
+                <span class="ac-go">进入 <icon-right /></span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- 特性展示 -->
-      <div class="features-section">
-        <h2 class="section-title">平台特性</h2>
-        
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <icon-bulb />
-            </div>
-            <h4>智能对话</h4>
-            <p>基于先进AI技术，提供智能交互体验</p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">
-              <icon-safe />
-            </div>
-            <h4>安全可靠</h4>
-            <p>数据加密存储，保护用户隐私</p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">
-              <icon-thunderbolt />
-            </div>
-            <h4>快速响应</h4>
-            <p>高效算法优化，即时获取答案</p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">
-              <icon-settings />
-            </div>
-            <h4>持续迭代</h4>
-            <p>不断优化升级，提供更好服务</p>
+      </section>
+
+      <!-- ======== 数据 ======== -->
+      <section class="sec">
+        <div class="stats">
+          <div class="st" v-for="s in stats" :key="s.label">
+            <div class="st-icon"><component :is="s.icon" /></div>
+            <div class="st-num">{{ s.value }}</div>
+            <div class="st-lbl">{{ s.label }}</div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <!-- ======== 能力 ======== -->
+      <section class="sec">
+        <div class="sec-head">
+          <h2>平台能力</h2>
+          <p>以先进 AI 技术为底座，提供卓越的智能服务体验</p>
+        </div>
+        <div class="hl-grid">
+          <div class="hl" v-for="h in highlights" :key="h.title">
+            <div class="hl-icon"><component :is="h.icon" /></div>
+            <div class="hl-text">
+              <h4>{{ h.title }}</h4>
+              <p>{{ h.desc }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======== CTA ======== -->
+      <section class="sec">
+        <div class="cta">
+          <div class="cta-orb"></div>
+          <div>
+            <h3>准备好开始了吗？</h3>
+            <p>每个智能体都是一扇通往 AI 世界的大门</p>
+          </div>
+          <a-button type="primary" size="large" class="cta-btn" @click="goTo('/coffee-shop')">
+            <icon-star /> 开始体验
+          </a-button>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
-import { 
-  IconRobot, 
-  IconHeart, 
-  IconBulb,
-  IconBook,
-  IconHeartFill,
-  IconRight,
-  IconSafe,
-  IconThunderbolt,
-  IconSettings
+import {
+  IconRobot, IconHeart, IconBulb, IconHeartFill,
+  IconRight, IconStar, IconMessage, IconUserGroup,
+  IconCheckCircle, IconCommand, IconSafe, IconThunderbolt, IconBarChart
 } from '@arco-design/web-vue/es/icon';
 
 export default {
   name: 'HomeView',
   components: {
-    IconRobot,
-    IconHeart,
-    IconBulb,
-    IconRight,
-    IconBook,
-    IconHeartFill,
-    IconSafe,
-    IconThunderbolt,
-    IconSettings
+    IconRobot, IconHeart, IconBulb, IconRight, IconHeartFill,
+    IconStar, IconMessage, IconUserGroup, IconCheckCircle,
+    IconCommand, IconSafe, IconThunderbolt, IconBarChart
   },
   setup() {
     const router = useRouter();
-    
+    const goTo = (r) => router.push(r);
+
     const aiApps = [
-      {
-        key: 'love',
-        title: 'AI 恋爱大师',
-        description: '你的专属恋爱顾问，提供情感、约会和关系方面的建议与支持。',
-        badge: '情感',
-        icon: IconHeart,
-        route: '/menu/love-app'
-      },
-      {
-        key: 'manus',
-        title: 'AI工具智能体',
-        description: '强大的智能助手，可以回答问题，提供建议、协助创作和分析信息。',
-        badge: 'AI',
-        icon: IconBulb,
-        route: '/menu/manus-app'
-      },
-      {
-        key: 'exam',
-        title: '智慧答题助手',
-        description: '可以回答问题、解析知识点，帮助你高效准确地完成各类考试和测验。',
-        badge: '学习',
-        icon: IconBook,
-        route: '/menu/exam-app'
-      },
-      {
-        key: 'health',
-        title: '云医通健康助手',
-        description: '您的健康顾问，提供健康知识、生活方式建议和基础医疗信息咨询。',
-        badge: '健康',
-        icon: IconHeartFill,
-        route: '/menu/health-app'
-      }
+      { key: 'coffee', title: '咖啡店智能客服', badge: '服务', icon: IconStar, route: '/coffee-shop',
+        description: '像一位懂咖啡的老友，从推荐到下单，三言两语完成点单。支持多轮对话、订单追踪与人工转接。',
+        tags: ['智能点单', 'RAG 检索', '订单管理'] },
+      { key: 'love', title: 'AI 恋爱大师', badge: '情感', icon: IconHeart, route: '/menu/love-app',
+        description: '不愿对朋友开口的心事，AI 会耐心听完，然后给你温暖而理性的回应。',
+        tags: ['情感分析', '约会建议', '关系咨询'] },
+      { key: 'manus', title: 'AI 工具智能体', badge: 'AI', icon: IconBulb, route: '/menu/manus-app',
+        description: '邮件、搜索、HTML 生成、数据分析 —— 把琐事交给 AI，你只管做决定。',
+        tags: ['邮件发送', '网页搜索', 'HTML 生成'] },
+      { key: 'health', title: '云医通健康助手', badge: '健康', icon: IconHeartFill, route: '/menu/health-app',
+        description: '健康问题不用百度吓自己，AI 给你专业、冷静、有据可查的健康参考。',
+        tags: ['健康咨询', '生活建议', '医疗信息'] }
     ];
-    
-    const goTo = (route) => {
-      router.push(route);
-    };
-    
-    return {
-      aiApps,
-      goTo
-    };
+
+    const stats = [
+      { icon: IconUserGroup, value: '12,000+', label: '月活用户' },
+      { icon: IconMessage, value: '86,000+', label: '累计对话' },
+      { icon: IconCheckCircle, value: '99.7%', label: '响应成功率' },
+      { icon: IconCommand, value: '4', label: '智能体集群' }
+    ];
+
+    const highlights = [
+      { icon: IconThunderbolt, title: '毫秒级响应', desc: 'SSE 流式传输，字级实时回显，对话体验流畅无等待。' },
+      { icon: IconSafe, title: '隐私优先', desc: '会话数据加密存储，敏感词自动过滤，每一次对话都安全可控。' },
+      { icon: IconBarChart, title: '持续进化', desc: '模型在线热更新，RAG 知识库实时同步，能力边界每天在扩展。' },
+      { icon: IconCommand, title: '多场景覆盖', desc: '电商客服、情感陪伴、工具智能、健康咨询 —— 一个平台全覆盖。' }
+    ];
+
+    return { aiApps, stats, highlights, goTo };
   }
 };
 </script>
 
 <style scoped>
-.home-view {
+/* ================================================================
+   ROOT
+   ================================================================ */
+.home {
   height: 100%;
   overflow-y: auto;
-  padding: var(--space-xl);
+  background: linear-gradient(175deg, #f8fafd 0%, #f1f5fb 30%, #f5f7fc 60%, #fafbfe 100%);
 }
 
 .home-container {
-  max-width: 1200px;
+  max-width: 1080px;
   margin: 0 auto;
+  padding: 56px 24px 80px;
 }
 
-/* 欢迎区 */
-.welcome-section {
-  margin-bottom: var(--space-2xl);
+/* ================================================================
+   HERO
+   ================================================================ */
+.hero {
+  text-align: center;
+  padding: 32px 0 60px;
 }
 
-.welcome-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  padding: var(--space-2xl);
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
-}
-
-.welcome-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-love), var(--color-manus), var(--color-exam), var(--color-health));
-  background-size: 300% 100%;
-  animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.welcome-content {
-  display: flex;
+.hero-badge {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-xl);
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5b6cf0;
+  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.04));
+  border: 1px solid rgba(99,102,241,0.12);
+  padding: 6px 16px;
+  border-radius: 99px;
+  margin-bottom: 24px;
 }
 
-.welcome-icon {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(37, 99, 235, 0.2) 100%);
-  border-radius: var(--radius-lg);
-  color: var(--color-primary);
-  font-size: 32px;
-  flex-shrink: 0;
-  position: relative;
-  animation: float 3s ease-in-out infinite;
+.badge-pulse {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+  animation: pulse-dot 2.5s ease-in-out infinite;
 }
 
-.welcome-icon::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  opacity: 0.3;
-  filter: blur(10px);
-  z-index: -1;
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+  50%      { box-shadow: 0 0 0 8px rgba(99,102,241,0.04); }
 }
 
-.welcome-text h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: var(--space-sm);
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--color-primary) 100%);
+.hero-title {
+  font-size: 50px;
+  font-weight: 780;
+  color: #0c1222;
+  line-height: 1.14;
+  margin: 0 0 20px;
+  letter-spacing: -1.8px;
+}
+
+.title-grad {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #a855f7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.welcome-text p {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-/* 区块标题 */
-.section-title {
+.hero-sub {
   font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-lg);
-  display: flex;
+  color: #6b7280;
+  line-height: 1.8;
+  max-width: 500px;
+  margin: 0 auto 36px;
+}
+
+.hero-nums {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 0;
+  background: #fff;
+  border: 1px solid #e8ecf2;
+  border-radius: 14px;
+  padding: 6px 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 16px;
-  background: var(--color-primary);
-  border-radius: 2px;
+.hn {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 10px 22px;
 }
 
-/* 应用卡片 */
-.apps-section {
-  margin-bottom: var(--space-2xl);
+.hn strong {
+  font-size: 23px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.5px;
 }
 
+.hn span {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.hero-nums i {
+  width: 1px; height: 22px;
+  background: #e8ecf2;
+}
+
+/* ================================================================
+   SECTIONS
+   ================================================================ */
+.sec + .sec { margin-top: 72px; }
+
+.sec-head {
+  margin-bottom: 36px;
+}
+
+.sec-head h2 {
+  font-size: 26px;
+  font-weight: 720;
+  color: #0f172a;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.sec-head p {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ================================================================
+   APP CARDS
+   ================================================================ */
 .apps-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-lg);
+  gap: 18px;
 }
 
-@media (max-width: 768px) {
-  .apps-grid {
-    grid-template-columns: 1fr;
-  }
-}
+@media (max-width: 768px) { .apps-grid { grid-template-columns: 1fr; } }
 
 .app-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  cursor: pointer;
-  transition: all var(--transition-base);
   position: relative;
+  display: flex;
+  gap: 20px;
+  background: #fff;
+  border: 1px solid #e8ecf2;
+  border-radius: 18px;
+  padding: 26px 26px 22px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
   overflow: hidden;
+  animation: cardIn 0.5s ease-out both;
 }
 
-.app-card::before {
-  content: '';
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 左侧彩色条 */
+.ac-bar {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
-  opacity: 0;
-  transition: opacity var(--transition-base);
+  left: 0; top: 16px; bottom: 16px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.bar-coffee { background: linear-gradient(180deg, #d4a574, #b45309); }
+.bar-love   { background: linear-gradient(180deg, #f9a8d4, #db2777); }
+.bar-manus  { background: linear-gradient(180deg, #67e8f9, #0891b2); }
+.bar-health { background: linear-gradient(180deg, #6ee7b7, #059669); }
+
+.app-card:hover .ac-bar {
+  top: 0; bottom: 0; width: 4px; border-radius: 0;
 }
 
 .app-card:hover {
-  border-color: transparent;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  transform: translateY(-4px);
+  border-color: #d4d8df;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.07);
 }
 
-.app-card:hover::before {
-  opacity: 1;
+/* 图标 */
+.ac-icon {
+  width: 48px; height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: all 0.35s;
 }
 
-.app-card-header {
+.icon-coffee { background: #fef7f0; color: #b45309; }
+.icon-love   { background: #fdf2f5; color: #db2777; }
+.icon-manus  { background: #f0fafc; color: #0891b2; }
+.icon-health { background: #f0faf5; color: #059669; }
+
+.app-card:hover .icon-coffee { box-shadow: 0 0 0 6px rgba(180,83,9,0.06); }
+.app-card:hover .icon-love   { box-shadow: 0 0 0 6px rgba(219,39,119,0.06); }
+.app-card:hover .icon-manus  { box-shadow: 0 0 0 6px rgba(8,145,178,0.06); }
+.app-card:hover .icon-health { box-shadow: 0 0 0 6px rgba(5,150,105,0.06); }
+
+/* 内容 */
+.ac-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.ac-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-md);
+  gap: 10px;
+  margin-bottom: 6px;
 }
 
-.app-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  font-size: 24px;
-  transition: all var(--transition-base);
+.ac-head h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
 }
 
-.icon-love {
-  background: linear-gradient(135deg, var(--color-love-light) 0%, rgba(225, 29, 72, 0.1) 100%);
-  color: var(--color-love);
-}
-
-.app-card:hover .icon-love {
-  background: var(--color-love);
-  color: white;
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
-}
-
-.icon-manus {
-  background: linear-gradient(135deg, var(--color-manus-light) 0%, rgba(8, 145, 178, 0.1) 100%);
-  color: var(--color-manus);
-}
-
-.app-card:hover .icon-manus {
-  background: var(--color-manus);
-  color: white;
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
-}
-
-.icon-exam {
-  background: linear-gradient(135deg, var(--color-exam-light) 0%, rgba(124, 58, 237, 0.1) 100%);
-  color: var(--color-exam);
-}
-
-.app-card:hover .icon-exam {
-  background: var(--color-exam);
-  color: white;
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
-}
-
-.icon-health {
-  background: linear-gradient(135deg, var(--color-health-light) 0%, rgba(5, 150, 105, 0.1) 100%);
-  color: var(--color-health);
-}
-
-.app-card:hover .icon-health {
-  background: var(--color-health);
-  color: white;
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
-}
-
-.app-badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
+.ac-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
   border-radius: 99px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all var(--transition-base);
+  flex-shrink: 0;
 }
 
-.badge-love {
-  background: linear-gradient(135deg, var(--color-love-light) 0%, rgba(225, 29, 72, 0.1) 100%);
-  color: var(--color-love);
+.badge-coffee { background: #fef7f0; color: #b45309; }
+.badge-love   { background: #fdf2f5; color: #db2777; }
+.badge-manus  { background: #f0fafc; color: #0891b2; }
+.badge-health { background: #f0faf5; color: #059669; }
+
+.ac-main p {
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0 0 16px;
+  flex: 1;
 }
 
-.app-card:hover .badge-love {
-  background: var(--color-love);
-  color: white;
+.ac-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
 }
 
-.badge-manus {
-  background: linear-gradient(135deg, var(--color-manus-light) 0%, rgba(8, 145, 178, 0.1) 100%);
-  color: var(--color-manus);
+.ac-tags { display: flex; gap: 6px; }
+
+.ac-tags span {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-weight: 500;
+  transition: all 0.25s;
 }
 
-.app-card:hover .badge-manus {
-  background: var(--color-manus);
-  color: white;
+.app-card:hover .ac-tags span {
+  background: #eef2ff;
+  color: #6366f1;
 }
 
-.badge-exam {
-  background: linear-gradient(135deg, var(--color-exam-light) 0%, rgba(124, 58, 237, 0.1) 100%);
-  color: var(--color-exam);
-}
-
-.app-card:hover .badge-exam {
-  background: var(--color-exam);
-  color: white;
-}
-
-.badge-health {
-  background: linear-gradient(135deg, var(--color-health-light) 0%, rgba(5, 150, 105, 0.1) 100%);
-  color: var(--color-health);
-}
-
-.app-card:hover .badge-health {
-  background: var(--color-health);
-  color: white;
-}
-
-.app-card-body {
-  margin-bottom: var(--space-md);
-}
-
-.app-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: var(--space-sm);
-  transition: color var(--transition-base);
-}
-
-.app-card:hover .app-title {
-  color: var(--color-primary);
-}
-
-.app-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.app-card-footer {
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--border-color);
-  position: relative;
-}
-
-.app-card:hover .app-card-footer {
-  border-top-color: transparent;
-}
-
-.start-btn {
+.ac-go {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 4px;
   font-size: 13px;
-  font-weight: 500;
-  color: var(--color-primary);
-  transition: all var(--transition-base);
+  font-weight: 600;
+  color: #6366f1;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: all 0.3s ease;
 }
 
-.app-card:hover .start-btn {
-  gap: var(--space-md);
-}
+.app-card:hover .ac-go { opacity: 1; transform: translateX(0); }
 
-/* 特性区 */
-.features-section {
-  margin-bottom: var(--space-xl);
-}
-
-.features-grid {
+/* ================================================================
+   STATS
+   ================================================================ */
+.stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
+  gap: 2px;
+  background: #fff;
+  border: 1px solid #e8ecf2;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
-@media (max-width: 992px) {
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+@media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+.st {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 26px 16px;
+  background: #fff;
+  transition: background 0.2s;
 }
 
-@media (max-width: 576px) {
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.st:hover { background: #fafbfe; }
 
-.feature-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  text-align: center;
-}
-
-.feature-icon {
-  width: 48px;
-  height: 48px;
+.st-icon {
+  width: 42px; height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--space-md);
-  background: var(--gray-100);
-  border-radius: var(--radius-md);
-  color: var(--color-primary);
-  font-size: 24px;
+  border-radius: 12px;
+  font-size: 20px;
+  color: #6366f1;
+  background: #eef2ff;
 }
 
-[data-theme="dark"] .feature-icon {
-  background: var(--gray-800);
+.st-num {
+  font-size: 26px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.5px;
 }
 
-.feature-card h4 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: var(--space-sm);
+.st-lbl {
+  font-size: 13px;
+  color: #94a3b8;
 }
 
-.feature-card p {
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.5;
+/* ================================================================
+   HIGHLIGHTS
+   ================================================================ */
+.hl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 640px) { .hl-grid { grid-template-columns: 1fr; } }
+
+.hl {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e8ecf2;
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.hl:hover {
+  border-color: #d4d8df;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
+}
+
+.hl-icon {
+  width: 42px; height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 20px;
+  flex-shrink: 0;
+  color: #6366f1;
+  background: #eef2ff;
+  transition: all 0.3s;
+}
+
+.hl:hover .hl-icon { background: #e0e7ff; }
+
+.hl-text h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+
+.hl-text p {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ================================================================
+   CTA
+   ================================================================ */
+.cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 50%, #f0f9ff 100%);
+  border: 1px solid #e0e7ff;
+  border-radius: 18px;
+  padding: 42px 46px;
+  overflow: hidden;
+}
+
+.cta-orb {
+  position: absolute;
+  right: 120px; top: -60px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta h3 {
+  font-size: 22px;
+  font-weight: 720;
+  color: #0f172a;
+  margin: 0 0 6px;
+  position: relative; z-index: 1;
+}
+
+.cta p {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+  position: relative; z-index: 1;
+}
+
+.cta-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 14px 34px !important;
+  height: auto !important;
+  border-radius: 14px !important;
+  font-size: 16px !important;
+  box-shadow: 0 6px 24px rgba(99,102,241,0.28) !important;
+  flex-shrink: 0;
+  position: relative; z-index: 1;
+  transition: all 0.3s !important;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 34px rgba(99,102,241,0.4) !important;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 1024px) {
+  .hero-title { font-size: 40px; }
+  .cta { flex-direction: column; text-align: center; padding: 32px 28px; }
+  .cta-orb { right: 50%; transform: translateX(50%); }
+}
+
+@media (max-width: 640px) {
+  .home-container { padding: 36px 16px 56px; }
+  .hero { padding: 12px 0 36px; }
+  .hero-title { font-size: 31px; }
+  .hero-sub { font-size: 14px; }
+  .hero-nums { flex-wrap: wrap; justify-content: center; }
+  .hero-nums i { display: none; }
+  .sec + .sec { margin-top: 48px; }
+  .app-card { flex-direction: column; gap: 12px; padding: 20px 18px 18px; }
+  .sec-head h2 { font-size: 22px; }
 }
 </style>

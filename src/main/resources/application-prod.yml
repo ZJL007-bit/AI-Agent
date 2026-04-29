@@ -1,0 +1,72 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+# springdoc-openapi config
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.lenyan.lenaiagent.controller
+# knife4j config
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+logging:
+  level:
+    #    org.springframework.ai.chat.advisor.SimpleChatAdvisor: DEBUG
+    org.springframework.ai: DEBUG
+spring:
+  config:
+    import:
+      - classpath:application-agent.yml
+  datasource:
+    mysql:
+      url: jdbc:mysql://localhost:3306/ai-agent?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      username: ai-agent
+      password: 20020801ZJL.
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    postgres:
+      url: jdbc:postgresql://localhost:5432/agent_vector
+      username: postgres
+      password: postgres
+      driver-class-name: org.postgresql.Driver
+  ai:
+    dashscope:
+      api-key: sk-e1c0974ed13b44cabec3f7b43f63a0af
+  mcp:
+    client:
+      sse:
+        connections:
+          image-search: #连接名称可以自定义(图像搜索服务)
+            url: http://localhost:8127
+          another-service:
+            url: http://localhost:8128
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 2456437685@qq.com
+    password: hlpeowayrxhpecgc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+
+# Qwen API配置
+qwen:
+  api-key: sk-e1c0974ed13b44cabec3f7b43f63a0af
+#搜索引擎API配置
+search-api:
+  api-key: ${SEARCH_API_KEY:hdrBbkyP4zbfy9yc6jq5c7F4}
+#图片搜索API配置
+pexels:
+  api-key: ${PEXELS_API_KEY:jPmBcwWdQvE21TT1rMuP0KeqWhznCnSKwv1OAcOlrKCI3Oaa0AaOa39R}

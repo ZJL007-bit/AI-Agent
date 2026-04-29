@@ -4,8 +4,10 @@ import MenuView from '@/views/MenuView.vue'
 import HomeView from '@/views/HomeView.vue'
 import LoveAppView from '@/views/LoveAppView.vue'
 import ManusAppView from '../views/ManusAppView.vue'
-import ExamAppView from '@/views/ExamAppView.vue'
 import HealthAppView from '../views/HealthAppView.vue'
+import AgentChatView from '@/views/AgentChatView.vue'
+import AgentAdminView from '@/views/AgentAdminView.vue'
+import CoffeeShopView from '@/views/CoffeeShopView.vue'
 
 
 const routes = [
@@ -14,11 +16,23 @@ const routes = [
     component: IndexApp
   },
   {
+    path: '/coffee-shop',
+    component: CoffeeShopView,
+    children: [
+  {
+    path: 'agent-chat',
+    component: AgentChatView
+  },
+  {
+    path: 'agent-admin',
+    component: AgentAdminView
+  }]
+  },
+  {
     path: '/menu',
     component: MenuView,
-        // 当子路由路径以 / 开头时，它会被当做根路径。
     children: [
-      { 
+      {
         path: 'home',
         component: HomeView
       },
@@ -31,16 +45,12 @@ const routes = [
         component: ManusAppView
       },
       {
-        path: 'exam-app',
-        component: ExamAppView
-      },
-      {
         path: 'health-app',
         component: HealthAppView
       }
     ]
   },
- 
+
 ]
 
 const router = createRouter({

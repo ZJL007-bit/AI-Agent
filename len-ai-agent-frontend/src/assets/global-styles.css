@@ -38,17 +38,17 @@ html {
   --color-manus-bg: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%);
   --color-manus-gradient: linear-gradient(135deg, #0891B2 0%, #22D3EE 100%);
   
-  /* 答题 - 紫色活力 */
-  --color-exam: #7C3AED;
-  --color-exam-light: rgba(124, 58, 237, 0.15);
-  --color-exam-bg: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(167, 139, 250, 0.04) 100%);
-  --color-exam-gradient: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
-  
   /* 健康 - 绿色清新 */
   --color-health: #059669;
   --color-health-light: rgba(5, 150, 105, 0.15);
   --color-health-bg: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(52, 211, 153, 0.04) 100%);
   --color-health-gradient: linear-gradient(135deg, #059669 0%, #34D399 100%);
+
+  /* 咖啡 - 温暖棕色 */
+  --color-coffee: #8B4513;
+  --color-coffee-light: rgba(139, 69, 19, 0.15);
+  --color-coffee-bg: linear-gradient(135deg, rgba(139, 69, 19, 0.08) 0%, rgba(160, 82, 45, 0.04) 100%);
+  --color-coffee-gradient: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
   
   /* 灰度系统 */
   --gray-50: #F8FAFC;
@@ -427,6 +427,166 @@ h1, h2, h3, h4, h5, h6 {
 .tab.active {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
+}
+
+/* 聊天确认弹窗 - 高级柔和风格 */
+.chat-confirm-modal .arco-modal-mask {
+  background: rgba(15, 23, 42, 0.42);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.chat-confirm-modal .arco-modal {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.94) 55%, rgba(241, 245, 249, 0.9) 100%);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.22);
+}
+
+.chat-confirm-modal .arco-modal-header {
+  padding: 22px 28px 6px;
+  border-bottom: none;
+}
+
+.chat-confirm-modal .arco-modal-header-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #475569;
+  background: rgba(100, 116, 139, 0.12);
+  transition: all var(--transition-base);
+}
+
+.chat-confirm-modal .arco-modal-title {
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+  color: #0f172a;
+}
+
+.chat-confirm-modal .arco-modal-content {
+  padding: 12px 28px 0;
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.chat-confirm-modal .arco-modal-footer {
+  padding: 24px 28px 26px;
+}
+
+.chat-confirm-modal .arco-btn {
+  border-radius: 12px;
+  min-width: 104px;
+  height: 44px;
+  font-weight: 600;
+  transition: all var(--transition-base);
+}
+
+.chat-confirm-modal .arco-btn-secondary {
+  border-color: rgba(148, 163, 184, 0.34);
+  color: #475569;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.chat-confirm-modal .arco-btn-secondary:hover {
+  border-color: rgba(100, 116, 139, 0.5);
+  color: #334155;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.chat-confirm-modal .arco-btn-status-danger {
+  border: none;
+  color: #ffffff;
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+}
+
+.chat-confirm-modal .arco-btn-status-danger:hover {
+  transform: translateY(-1px);
+  background-position: 100% 50%;
+}
+
+.chat-confirm-modal.chat-confirm-love .arco-modal {
+  border-color: rgba(225, 29, 72, 0.22);
+  background: linear-gradient(165deg, rgba(255, 246, 251, 0.96) 0%, rgba(255, 240, 247, 0.94) 55%, rgba(255, 250, 252, 0.9) 100%);
+}
+
+.chat-confirm-modal.chat-confirm-love .arco-modal-header-icon {
+  color: var(--color-love);
+  background: rgba(225, 29, 72, 0.12);
+}
+
+.chat-confirm-modal.chat-confirm-love .arco-btn-status-danger {
+  background-image: linear-gradient(135deg, #e11d48 0%, #fb7185 55%, #f472b6 100%);
+  box-shadow: 0 10px 22px rgba(225, 29, 72, 0.28);
+}
+
+.chat-confirm-modal.chat-confirm-manus .arco-modal {
+  border-color: rgba(8, 145, 178, 0.22);
+  background: linear-gradient(165deg, rgba(240, 252, 255, 0.96) 0%, rgba(236, 254, 255, 0.94) 55%, rgba(247, 253, 255, 0.9) 100%);
+}
+
+.chat-confirm-modal.chat-confirm-manus .arco-modal-header-icon {
+  color: var(--color-manus);
+  background: rgba(8, 145, 178, 0.12);
+}
+
+.chat-confirm-modal.chat-confirm-manus .arco-btn-status-danger {
+  background-image: linear-gradient(135deg, #0891b2 0%, #06b6d4 56%, #22d3ee 100%);
+  box-shadow: 0 10px 22px rgba(8, 145, 178, 0.28);
+}
+
+.chat-confirm-modal.chat-confirm-health .arco-modal {
+  border-color: rgba(5, 150, 105, 0.22);
+  background: linear-gradient(165deg, rgba(240, 253, 246, 0.96) 0%, rgba(236, 253, 245, 0.94) 55%, rgba(246, 255, 250, 0.9) 100%);
+}
+
+.chat-confirm-modal.chat-confirm-health .arco-modal-header-icon {
+  color: var(--color-health);
+  background: rgba(5, 150, 105, 0.12);
+}
+
+.chat-confirm-modal.chat-confirm-health .arco-btn-status-danger {
+  background-image: linear-gradient(135deg, #059669 0%, #10b981 56%, #34d399 100%);
+  box-shadow: 0 10px 22px rgba(5, 150, 105, 0.28);
+}
+
+[data-theme="dark"] .chat-confirm-modal .arco-modal-mask {
+  background: rgba(2, 6, 23, 0.6);
+}
+
+[data-theme="dark"] .chat-confirm-modal .arco-modal {
+  border-color: rgba(148, 163, 184, 0.2);
+  background: linear-gradient(165deg, rgba(17, 24, 39, 0.96) 0%, rgba(15, 23, 42, 0.95) 56%, rgba(30, 41, 59, 0.92) 100%);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.52);
+}
+
+[data-theme="dark"] .chat-confirm-modal .arco-modal-title {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .chat-confirm-modal .arco-modal-content {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .chat-confirm-modal .arco-btn-secondary {
+  border-color: rgba(100, 116, 139, 0.44);
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.72);
+}
+
+[data-theme="dark"] .chat-confirm-modal .arco-btn-secondary:hover {
+  border-color: rgba(148, 163, 184, 0.54);
+  color: #e2e8f0;
+  background: rgba(51, 65, 85, 0.78);
 }
 
 /* 提示信息 */

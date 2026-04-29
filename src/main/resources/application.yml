@@ -1,42 +1,5 @@
 spring:
   application:
-    name: len-ai-agent
+    name: ai-agent
   profiles:
     active: local
-  datasource:
-    mysql:
-      url: ${DB_URL:jdbc:mysql://localhost:3306/lenai?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai}
-      username: ${DB_USERNAME:root}
-      password: ${DB_PASSWORD:20020801ZJL.}
-      driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
-    postgres:
-      url: ${PG_URL:jdbc:postgresql://localhost:5432/lenai_vector}
-      username: ${PG_USERNAME:postgres}
-      password: ${PG_PASSWORD:postgres}
-      driver-class-name: org.postgresql.Driver
-
-server:
-  port: 8102
-  servlet:
-    context-path: /api
-# springdoc-openapi config
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-  api-docs:
-    path: /v3/api-docs
-  group-configs:
-    - group: 'default'
-      paths-to-match: '/**'
-      packages-to-scan: com.lenyan.lenaiagent.controller
-# knife4j config
-knife4j:
-  enable: true
-  setting:
-    language: zh_cn
-logging:
-  level:
-    #    org.springframework.ai.chat.advisor.SimpleChatAdvisor: DEBUG
-    org.springframework.ai: DEBUG

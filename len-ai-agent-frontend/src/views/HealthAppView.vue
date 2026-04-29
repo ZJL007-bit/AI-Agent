@@ -74,9 +74,9 @@
 <script>
 import { onBeforeUnmount, ref } from 'vue';
 import ChatMessage from '@/components/ChatMessage.vue';
-import { connectToHealthChat } from '@/services/api';
 import { getOrCreateChatId } from '@/utils/uuid';
 import { IconHeartFill, IconDelete } from '@arco-design/web-vue/es/icon';
+import { Modal, Message } from '@arco-design/web-vue';
 
 export default {
   name: 'HealthAppView',
@@ -106,29 +106,32 @@ export default {
       }
     };
     
-    // 保存消息到localStorage
-    const saveMessages = () => {
-      localStorage.setItem(`chat_messages_${chatId.value}`, JSON.stringify(messages.value));
-    };
-    
     // 加载消息历史
     loadMessages();
     
     const clearMessages = () => {
-      if (window.confirm('您确定要清除所有聊天记录吗？此操作不可恢复。')) {
-        if (currentEventSource.value) {
-          currentEventSource.value.close();
-          currentEventSource.value = null;
-        }
+      Modal.confirm({
+        modalClass: 'chat-confirm-modal chat-confirm-health',
+        title: '确认清除聊天记录',
+        content: '此操作不可恢复，是否继续？',
+        okText: '确认清除',
+        cancelText: '取消',
+        okButtonProps: { status: 'danger' },
+        onOk: () => {
+          if (currentEventSource.value) {
+            currentEventSource.value.close();
+            currentEventSource.value = null;
+          }
 
-        messages.value = [];
-        localStorage.removeItem(`chat_messages_${chatId.value}`);
-        localStorage.removeItem(CHAT_ID_KEY);
-        chatId.value = getOrCreateChatId(CHAT_ID_KEY);
-        stepMessageIndexes.value = {};
-        finalMessageIndex.value = null;
-        isLoading.value = false;
-      }
+          messages.value = [];
+          localStorage.removeItem(`chat_messages_${chatId.value}`);
+          localStorage.removeItem(CHAT_ID_KEY);
+          chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+          stepMessageIndexes.value = {};
+          finalMessageIndex.value = null;
+          isLoading.value = false;
+        }
+      });
     };
     
     // 处理键盘事件
@@ -146,90 +149,9 @@ export default {
       }
     };
     
-    // 发送消息给后端
     const sendMessage = (message) => {
       if (!message.trim() || isLoading.value) return;
-      
-      // 添加用户消息
-      const userMessage = {
-        content: message,
-        isUser: true,
-        timestamp: Date.now()
-      };
-      messages.value.push(userMessage);
-      saveMessages();
-      
-      // 清空输入框
-      inputValue.value = '';
-      isLoading.value = true;
-      
-      // 如果有现存的连接，先关闭
-      if (currentEventSource.value) {
-        currentEventSource.value.close();
-      }
-      
-      // 重置流式消息索引
-      stepMessageIndexes.value = {};
-      finalMessageIndex.value = null;
-      
-      // 建立新的 SSE 连接
-      const eventSource = connectToHealthChat(
-        message,
-        (data) => {
-          const text = typeof data === 'string' ? data : String(data || '');
-          if (!text.trim()) {
-            return;
-          }
-
-          const trimmedText = text.trim();
-          const stepMatch = trimmedText.match(/^Step\s+(\d+):/);
-
-          if (stepMatch) {
-            const stepNumber = Number(stepMatch[1]);
-            const existingIndex = stepMessageIndexes.value[stepNumber];
-
-            if (typeof existingIndex === 'number' && messages.value[existingIndex]) {
-              messages.value[existingIndex].content = trimmedText;
-            } else {
-              const stepMessage = {
-                content: trimmedText,
-                isUser: false,
-                timestamp: Date.now() + stepNumber
-              };
-              messages.value.push(stepMessage);
-              stepMessageIndexes.value[stepNumber] = messages.value.length - 1;
-            }
-          } else if (typeof finalMessageIndex.value === 'number' && messages.value[finalMessageIndex.value]) {
-            messages.value[finalMessageIndex.value].content += text;
-          } else {
-            const finalMessage = {
-              content: text,
-              isUser: false,
-              timestamp: Date.now() + 999
-            };
-            messages.value.push(finalMessage);
-            finalMessageIndex.value = messages.value.length - 1;
-          }
-          
-          saveMessages();
-        },
-        (error) => {
-          console.error('SSE 连接错误:', error);
-          isLoading.value = false;
-          currentEventSource.value = null;
-        }
-      );
-      
-      // 当连接关闭时
-      eventSource.addEventListener('done', () => {
-        isLoading.value = false;
-        saveMessages();
-        eventSource.close();
-        currentEventSource.value = null;
-      });
-      
-      // 保存当前连接，以便后续可以关闭
-      currentEventSource.value = eventSource;
+      Message.info('功能还没完善，请留意后续迭代');
     };
     
     // 组件卸载前关闭SSE连接

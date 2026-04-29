@@ -100,6 +100,7 @@ import ChatMessage from '@/components/ChatMessage.vue';
 import { connectToManusChat } from '@/services/api';
 import { getOrCreateChatId } from '@/utils/uuid';
 import { IconBulb, IconDelete } from '@arco-design/web-vue/es/icon';
+import { Modal } from '@arco-design/web-vue';
 
 export default {
   name: 'ManusAppView',
@@ -134,20 +135,28 @@ export default {
     loadMessages();
 
     const clearMessages = () => {
-      if (window.confirm('你确定要清除所有聊天记录吗？此操作不可恢复。')) {
-        if (currentEventSource.value) {
-          currentEventSource.value.close();
-          currentEventSource.value = null;
-        }
+      Modal.confirm({
+        modalClass: 'chat-confirm-modal chat-confirm-manus',
+        title: '确认清除聊天记录',
+        content: '此操作不可恢复，是否继续？',
+        okText: '确认清除',
+        cancelText: '取消',
+        okButtonProps: { status: 'danger' },
+        onOk: () => {
+          if (currentEventSource.value) {
+            currentEventSource.value.close();
+            currentEventSource.value = null;
+          }
 
-        messages.value = [];
-        localStorage.removeItem(`chat_messages_${chatId.value}`);
-        localStorage.removeItem(CHAT_ID_KEY);
-        chatId.value = getOrCreateChatId(CHAT_ID_KEY);
-        stepMessageIndexes.value = {};
-        finalMessageIndex.value = null;
-        isLoading.value = false;
-      }
+          messages.value = [];
+          localStorage.removeItem(`chat_messages_${chatId.value}`);
+          localStorage.removeItem(CHAT_ID_KEY);
+          chatId.value = getOrCreateChatId(CHAT_ID_KEY);
+          stepMessageIndexes.value = {};
+          finalMessageIndex.value = null;
+          isLoading.value = false;
+        }
+      });
     };
 
     const scrollToBottom = () => {

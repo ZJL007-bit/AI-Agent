@@ -24,6 +24,7 @@
             </a-button>
           </div>
         </div>
+        <template v-else-if="hasUrls"><span v-html="linkifiedText"></span></template>
         <template v-else>{{ text }}</template>
       </div>
     </div>
@@ -136,6 +137,24 @@ export default {
     hasDocumentLink() {
       // 检查消息是否包含任意文档链接（PDF或HTML）
       return this.hasPdfLink || this.hasHtmlLink;
+    },
+    hasUrls() {
+      if (!this.text || this.isUser) return false;
+      // 检测 http/https 链接
+      return /https?:\/\/[^\s]+/.test(this.text);
+    },
+    linkifiedText() {
+      if (!this.text) return '';
+      // 转义 HTML 特殊字符，然后将 URL 替换为可点击链接
+      const escaped = this.text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+      return escaped.replace(
+        /(https?:\/\/[^\s\n<>"'&]+)/g,
+        '<a href="$1" target="_blank" rel="noopener" class="chat-link">$1</a>'
+      );
     },
     // 转换后的文本，将各种API路径替换为localhost:8102开头的完整URL
     transformedText() {
@@ -527,6 +546,16 @@ export default {
 
 .document-message :deep(a:hover) {
   text-decoration: underline;
+}
+
+.chat-link {
+  color: #3370FF;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.chat-link:hover {
+  color: #1E5ADB;
 }
 
 /* 添加消息内容的滚动条样式 */

@@ -3,7 +3,6 @@ package com.lenyan.lenaiagent.app;
 import com.lenyan.lenaiagent.advisor.MyLoggerAdvisor;
 import com.lenyan.lenaiagent.advisor.ProhibitedWordAdvisor;
 import com.lenyan.lenaiagent.advisor.ReReadingAdvisor;
-import com.lenyan.lenaiagent.chatmemory.MySQLChatMemory;
 import com.lenyan.lenaiagent.chatmemory.MybatisPlusChatMemory;
 import com.lenyan.lenaiagent.rag.LoveAppRagCustomAdvisorFactory;
 import com.lenyan.lenaiagent.rag.QueryRewriter;
@@ -13,15 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -41,7 +39,7 @@ public class LoveApp {
     /**
      * 基于PgVector的向量存储，用于持久化向量数据检索
      */
-    @Resource
+    @Autowired(required = false)
     private VectorStore pgVectorVectorStore;
     /**
      * 云端RAG增强检索顾问，用于接入外部知识库服务
@@ -57,7 +55,7 @@ public class LoveApp {
     private QueryRewriter queryRewriter;
 
     /**
-     *  通过构造器注册chatClient, 设置系统提示词,初始化chatmenory通过mybatis实现上下问记忆,通过拦截器初始化违禁词
+     * 通过构造器注册chatClient, 设置系统提示词,初始化chatmenory通过mybatis实现上下问记忆,通过拦截器初始化违禁词
      */
     public LoveApp(ChatModel dashscopeChatModel, ChatMemoryService chatMemoryService
             /*, MybatisPlusChatMemory mybatisPluschatMemory ,MySQLChatMemory jdbcmysqlchatMemory*/) {
@@ -145,7 +143,7 @@ public class LoveApp {
                 .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .advisors(new MyLoggerAdvisor()) // 开启日志，便于观察效果
-               // .advisors(loveAppRagCloudAdvisor)    // 应用增强检索服务（云知识库服务）
+                // .advisors(loveAppRagCloudAdvisor)    // 应用增强检索服务（云知识库服务）
                 .advisors(new QuestionAnswerAdvisor(pgVectorVectorStore))  // rag应用 （基于 PgVector 向量存储）
                 // 应用自定义的 RAG 检索增强服务（文档查询器 + 上下文增强器）
 //                .advisors(LoveAppRagCustomAdvisorFactory.createLoveAppRagCustomAdvisor(
@@ -185,7 +183,7 @@ public class LoveApp {
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 // 应用知识库问答
-               // .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
+                // .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
                 // 应用增强检索服务（云知识库服务）
                 .advisors(loveAppRagCloudAdvisor)
                 // rag应用 （基于 PgVector 向量存储）

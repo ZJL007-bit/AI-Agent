@@ -51,7 +51,7 @@
             <span class="gradient-text">重新定义AI交互</span>
           </h1>
           <p class="hero-description">
-            集合多场景AI智能体，一站式解决情感、学习、健康等多元化需求，让AI成为你生活中的贴心伙伴。
+            覆盖情感、健康、电商等多场景AI智能体，从深夜心事到清晨咖啡，让AI成为你生活中无所不在的贴心伙伴。
           </p>
           <div class="hero-actions">
             <a href="/menu/home" class="btn-primary glow-effect cursor-pointer">
@@ -86,6 +86,11 @@
             <div class="mockup-body">
               <div class="mockup-stats">
                 <div class="stat-card">
+                  <p class="stat-label">咖啡店客服</p>
+                  <p class="stat-value">2,918</p>
+                  <p class="stat-change positive">智能点单</p>
+                </div>
+                <div class="stat-card">
                   <p class="stat-label">AI 恋爱大师</p>
                   <p class="stat-value">3,247</p>
                   <p class="stat-change positive">对话次数</p>
@@ -94,11 +99,6 @@
                   <p class="stat-label">超级智能体</p>
                   <p class="stat-value">5,891</p>
                   <p class="stat-change positive">解答问题</p>
-                </div>
-                <div class="stat-card">
-                  <p class="stat-label">健康助手</p>
-                  <p class="stat-value">1,856</p>
-                  <p class="stat-change positive">健康咨询</p>
                 </div>
               </div>
               <div class="mockup-chart">
@@ -115,12 +115,11 @@
     <section class="logo-section">
       <p class="logo-title">深受用户信赖</p>
       <div class="logo-grid">
+        <div class="logo-item" style="color: var(--color-coffee);">咖啡店客服</div>
         <div class="logo-item" style="color: var(--color-love);">恋爱大师</div>
-        <div class="logo-item" style="color: var(--color-manus);">超级智者</div>
-        <div class="logo-item" style="color: var(--color-exam);">智慧答题</div>
+        <div class="logo-item" style="color: var(--color-manus);">工具智体</div>
         <div class="logo-item" style="color: var(--color-health);">健康顾问</div>
         <div class="logo-item" style="color: var(--color-primary);">万能助手</div>
-        <div class="logo-item" style="color: var(--color-accent);">效率专家</div>
       </div>
     </section>
 
@@ -129,9 +128,16 @@
       <div class="section-header">
         <span class="section-badge">智能体矩阵</span>
         <h2 class="section-title">多场景AI智能体</h2>
-        <p class="section-description">为不同需求场景打造的专属AI助手，让智能交互更懂你</p>
+        <p class="section-description">覆盖情感、知识、商业、健康等多元场景，每个智能体都带着各自的温度与专业，只为更懂你的每一次对话</p>
       </div>
       <div class="features-grid">
+        <div class="feature-card hover-lift">
+          <div class="feature-icon" style="background: var(--color-coffee-gradient);">
+            <icon-star />
+          </div>
+          <h3 class="feature-title">电商智能客服</h3>
+          <p class="feature-description">全天候在线营业的AI店长，听懂每位顾客的喜好，从点单到下单一气呵成，让每一杯咖啡都恰到好处。</p>
+        </div>
         <div class="feature-card hover-lift">
           <div class="feature-icon" style="background: var(--color-love-gradient);">
             <icon-heart />
@@ -143,15 +149,8 @@
           <div class="feature-icon" style="background: var(--color-manus-gradient);">
             <icon-bulb />
           </div>
-          <h3 class="feature-title">超级智能体</h3>
-          <p class="feature-description">强大的AI助手，回答问题、协助创作、深度分析和智能建议。</p>
-        </div>
-        <div class="feature-card hover-lift">
-          <div class="feature-icon" style="background: var(--color-exam-gradient);">
-            <icon-book />
-          </div>
-          <h3 class="feature-title">智慧答题助手</h3>
-          <p class="feature-description">精准回答问题、解析知识点，助你高效通过各类考试和测验。</p>
+          <h3 class="feature-title">工具智能体</h3>
+          <p class="feature-description">强大的AI助手，发送邮件、协助创作、网页搜索、html生成和智能建议。</p>
         </div>
         <div class="feature-card hover-lift">
           <div class="feature-icon" style="background: var(--color-health-gradient);">
@@ -166,13 +165,6 @@
           </div>
           <h3 class="feature-title">AI 万能助手</h3>
           <p class="feature-description">全能型AI助手，处理各类问题，提供个性化解决方案。</p>
-        </div>
-        <div class="feature-card hover-lift">
-          <div class="feature-icon">
-            <icon-bar-chart />
-          </div>
-          <h3 class="feature-title">效率提升</h3>
-          <p class="feature-description">智能日程管理、任务规划，让工作和生活更有条理。</p>
         </div>
       </div>
     </section>
@@ -210,6 +202,20 @@
           <div class="testimonial-rating">
             <icon-star v-for="i in 5" :key="i" />
           </div>
+          <p class="testimonial-content">"咖啡店AI客服太方便了，它会记住我常点的口味，聊着天就把单下了，社恐人狂喜！"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background: var(--color-coffee-light); color: var(--color-coffee);">客
+            </div>
+            <div class="author-info">
+              <p class="author-name">咖啡星人</p>
+              <p class="author-title">忠实顾客</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-rating">
+            <icon-star v-for="i in 5" :key="i" />
+          </div>
           <p class="testimonial-content">"AI恋爱大师帮我理清了很多感情上的困惑，回答很贴心温暖。"</p>
           <div class="testimonial-author">
             <div class="author-avatar" style="background: var(--color-love-light); color: var(--color-love);">恋</div>
@@ -229,19 +235,6 @@
             <div class="author-info">
               <p class="author-name">超哥</p>
               <p class="author-title">程序员</p>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="testimonial-rating">
-            <icon-star v-for="i in 5" :key="i" />
-          </div>
-          <p class="testimonial-content">"健康顾问给的建议很实用，帮我养成了更好的生活习惯。"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar" style="background: var(--color-health-light); color: var(--color-health);">健</div>
-            <div class="author-info">
-              <p class="author-name">健身达人</p>
-              <p class="author-title">自由职业</p>
             </div>
           </div>
         </div>
@@ -282,24 +275,28 @@
           <div class="feature-icon" style="background: var(--color-manus-gradient);">
             <icon-bulb />
           </div>
-          <h3 class="pricing-title">全能助手</h3>
+          <h3 class="pricing-title">电商客服助手</h3>
           <p class="pricing-subtitle">一站式智能解决方案</p>
           <ul class="pricing-features">
             <li>
               <icon-check />
-              多领域知识
+              智能点单
             </li>
             <li>
               <icon-check />
-              创作辅助
+              订单追踪
             </li>
             <li>
               <icon-check />
-              代码编写
+              敏感词过滤
             </li>
             <li>
               <icon-check />
-              智能分析
+              多轮对话
+            </li>
+            <li>
+              <icon-check />
+              RAG检索
             </li>
           </ul>
           <a href="/menu/home" class="btn-pricing primary cursor-pointer">开始探索</a>
@@ -308,20 +305,24 @@
           <div class="feature-icon" style="background: var(--color-health-gradient);">
             <icon-heart-fill />
           </div>
-          <h3 class="pricing-title">健康陪伴</h3>
-          <p class="pricing-subtitle">你的健康管家</p>
+          <h3 class="pricing-title">工具智能体</h3>
+          <p class="pricing-subtitle">你的智能工具箱</p>
           <ul class="pricing-features">
             <li>
               <icon-check />
-              健康咨询
+              邮件发送
             </li>
             <li>
               <icon-check />
-              生活方式建议
+              生成html网页
             </li>
             <li>
               <icon-check />
-              医疗信息
+              网页搜索
+            </li>
+            <li>
+              <icon-check />
+              PDF 文档生成
             </li>
           </ul>
           <a href="/menu/home" class="btn-pricing cursor-pointer">立即体验</a>
@@ -351,9 +352,9 @@
         <div class="footer-links">
           <div class="footer-column">
             <h4>智能体</h4>
+            <a href="#">咖啡店客服</a>
             <a href="#">恋爱大师</a>
-            <a href="#">超级智能体</a>
-            <a href="#">答题助手</a>
+            <a href="#">工具智能体</a>
             <a href="#">健康顾问</a>
           </div>
           <div class="footer-column">
@@ -387,11 +388,9 @@ import {
   IconCheckCircle,
   IconCheck,
   IconStar,
-  IconBarChart,
   IconBulb,
   IconHeart,
-  IconHeartFill,
-  IconBook
+  IconHeartFill
 } from '@arco-design/web-vue/es/icon';
 
 export default {
@@ -403,11 +402,9 @@ export default {
     IconCheckCircle,
     IconCheck,
     IconStar,
-    IconBarChart,
     IconBulb,
     IconHeart,
-    IconHeartFill,
-    IconBook
+    IconHeartFill
   },
   setup() {
     const router = useRouter();
@@ -442,7 +439,8 @@ export default {
 
 <style scoped>
 .index-app {
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
   background: var(--color-bg-base);
 }
 
@@ -525,8 +523,15 @@ export default {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4); }
-  50% { box-shadow: 0 0 20px 4px rgba(234, 88, 12, 0.2); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 4px rgba(234, 88, 12, 0.2);
+  }
 }
 
 .navbar-toggle {
@@ -562,6 +567,7 @@ export default {
   .navbar-links {
     display: none;
   }
+
   .navbar-toggle {
     display: block;
   }
@@ -733,8 +739,15 @@ export default {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 .mockup-header {
@@ -751,9 +764,17 @@ export default {
   border-radius: 50%;
 }
 
-.bg-red-500 { background: #EF4444; }
-.bg-yellow-500 { background: #EAB308; }
-.bg-green-500 { background: #22C55E; }
+.bg-red-500 {
+  background: #EF4444;
+}
+
+.bg-yellow-500 {
+  background: #EAB308;
+}
+
+.bg-green-500 {
+  background: #22C55E;
+}
 
 .mockup-body {
   background: var(--gray-900);
@@ -825,9 +846,11 @@ export default {
   .hero-content {
     grid-template-columns: 1fr;
   }
+
   .hero-visual {
     display: none;
   }
+
   .hero-title {
     font-size: 40px;
   }
@@ -996,6 +1019,7 @@ export default {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .stat-number {
     font-size: 40px;
   }
@@ -1310,6 +1334,7 @@ export default {
   .footer-content {
     grid-template-columns: 1fr;
   }
+
   .footer-links {
     grid-template-columns: repeat(3, 1fr);
   }

@@ -84,8 +84,9 @@ public abstract class BaseAgent {
         }
     }
 
-      /**
-     * 运行代理(流式输出)*/
+    /**
+     * 运行代理(流式输出)
+     */
 
     public SseEmitter runStream(String userPrompt) {
         //1.创建一个 SseEmitter 对象，设置超时时间为 5 分钟
@@ -260,4 +261,5 @@ public abstract class BaseAgent {
 
         return false;
     }
+
 }
